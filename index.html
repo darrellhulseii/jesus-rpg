@@ -1,0 +1,2576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Battle for Virtue - Complete Edition</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Crimson+Text:wght@400;600;700&family=Cinzel:wght@600;700&display=swap');
+        
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            position: fixed;
+        }
+        
+        body { 
+            font-family: 'Crimson Text', serif; 
+            background: linear-gradient(135deg, #1a1a2e 0%, #2d1b4e 100%); 
+            color: #fff; 
+            touch-action: none;
+        }
+        
+        /* Responsive Container */
+        .responsive-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Enhanced Sprites */
+        .sprite { 
+            position: relative; 
+            width: min(10vw, 100px); 
+            height: min(12vw, 120px);
+        }
+        
+        .sprite-guardian::before { 
+            content: '☃️'; 
+            font-size: clamp(50px, 8vw, 80px);
+            position: absolute; 
+            top: 50%; 
+            left: 50%; 
+            transform: translate(-50%, -50%); 
+            filter: drop-shadow(0 0 20px rgba(135, 206, 235, 0.9));
+            animation: snowmanGlow 3s ease-in-out infinite;
+        }
+        
+        @keyframes snowmanGlow {
+            0%, 100% { 
+                filter: drop-shadow(0 0 20px rgba(135, 206, 235, 0.9));
+                transform: translate(-50%, -50%) scale(1);
+            }
+            50% { 
+                filter: drop-shadow(0 0 35px rgba(135, 206, 235, 1));
+                transform: translate(-50%, -50%) scale(1.05);
+            }
+        }
+        
+        .sprite-angel::before { 
+            content: '😇'; 
+            font-size: clamp(50px, 8vw, 80px);
+            position: absolute; 
+            top: 50%; 
+            left: 50%; 
+            transform: translate(-50%, -50%); 
+            filter: drop-shadow(0 0 25px rgba(255, 215, 0, 1));
+            animation: angelGlow 2.5s ease-in-out infinite;
+        }
+        
+        @keyframes angelGlow {
+            0%, 100% { 
+                filter: drop-shadow(0 0 25px rgba(255, 215, 0, 1));
+            }
+            50% { 
+                filter: drop-shadow(0 0 45px rgba(255, 215, 0, 1)) drop-shadow(0 0 60px rgba(255, 255, 255, 0.5));
+            }
+        }
+        
+        .sprite-angel::after { 
+            content: ''; 
+            position: absolute; 
+            top: -5%; 
+            left: 50%; 
+            transform: translateX(-50%); 
+            width: 70%; 
+            height: 15%; 
+            border: clamp(2px, 0.3vw, 3px) solid #FFD700; 
+            border-radius: 50%; 
+            box-shadow: 0 0 30px #FFD700, inset 0 0 15px #FFD700;
+            animation: haloGlow 2s ease-in-out infinite;
+        }
+        
+        @keyframes haloGlow { 
+            0%, 100% { 
+                box-shadow: 0 0 30px #FFD700, inset 0 0 15px #FFD700;
+                opacity: 0.8;
+            }
+            50% { 
+                box-shadow: 0 0 50px #FFD700, inset 0 0 25px #FFD700;
+                opacity: 1;
+            }
+        }
+        
+        .sprite-enemy { 
+            font-size: clamp(60px, 10vw, 100px);
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            filter: drop-shadow(0 0 30px rgba(255, 0, 0, 1));
+            animation: enemyPulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes enemyPulse {
+            0%, 100% { 
+                filter: drop-shadow(0 0 30px rgba(255, 0, 0, 1));
+                transform: scale(1);
+            }
+            50% { 
+                filter: drop-shadow(0 0 50px rgba(255, 0, 0, 1));
+                transform: scale(1.08);
+            }
+        }
+        
+        /* Saint Modal with Image */
+        #saintModal { 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            background: rgba(0, 0, 0, 0.95); 
+            display: none; 
+            align-items: center; 
+            justify-content: center; 
+            z-index: 1700; 
+            padding: clamp(15px, 3vw, 40px);
+        }
+        
+        #saintModal.active { 
+            display: flex; 
+            animation: modalFadeIn 0.6s ease-out;
+        }
+        
+        @keyframes modalFadeIn { 
+            from { opacity: 0; transform: scale(0.95); } 
+            to { opacity: 1; transform: scale(1); } 
+        }
+        
+        .saint-content { 
+            max-width: min(95vw, 900px);
+            width: 100%;
+            background: linear-gradient(135deg, rgba(15, 12, 41, 0.98), rgba(48, 43, 99, 0.98)); 
+            padding: clamp(25px, 5vw, 50px);
+            border: clamp(3px, 0.5vw, 5px) solid #FFD700; 
+            border-radius: clamp(15px, 2vw, 20px);
+            box-shadow: 0 0 70px rgba(255, 215, 0, 0.9); 
+            text-align: center; 
+            position: relative; 
+            overflow: hidden;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .saint-content::before { 
+            content: ''; 
+            position: absolute; 
+            top: -50%; 
+            left: -50%; 
+            width: 200%; 
+            height: 200%; 
+            background: radial-gradient(circle, rgba(255, 215, 0, 0.15) 0%, transparent 70%); 
+            animation: saintGlow 6s ease-in-out infinite;
+            pointer-events: none;
+        }
+        
+        @keyframes saintGlow { 
+            0%, 100% { transform: rotate(0deg); } 
+            50% { transform: rotate(180deg); } 
+        }
+        
+        .saint-image-container { 
+            position: relative; 
+            width: clamp(180px, 30vw, 300px);
+            height: clamp(180px, 30vw, 300px);
+            margin: 0 auto clamp(20px, 3vw, 30px);
+            border-radius: 50%; 
+            border: clamp(4px, 0.6vw, 6px) solid #FFD700; 
+            overflow: hidden; 
+            box-shadow: 0 0 50px rgba(255, 215, 0, 0.8), inset 0 0 40px rgba(255, 215, 0, 0.3); 
+            background: linear-gradient(135deg, #2c1810 0%, #1a0f0a 100%);
+            animation: saintImageFloat 4s ease-in-out infinite;
+        }
+        
+        @keyframes saintImageFloat {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-8px) scale(1.02); }
+        }
+        
+        .saint-image { 
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover; 
+            font-size: clamp(100px, 18vw, 180px);
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            background: radial-gradient(circle, rgba(255, 215, 0, 0.25) 0%, transparent 70%);
+        }
+        
+        .saint-halo { 
+            position: absolute; 
+            top: -10%; 
+            left: 50%; 
+            transform: translateX(-50%); 
+            width: 80%; 
+            height: 16%; 
+            border: clamp(4px, 0.6vw, 6px) solid #FFD700; 
+            border-radius: 50%; 
+            box-shadow: 0 0 50px #FFD700, inset 0 0 30px #FFD700; 
+            animation: haloFloat 3s ease-in-out infinite, haloPulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes haloFloat {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(-10px); }
+        }
+        
+        @keyframes haloPulse {
+            0%, 100% { 
+                box-shadow: 0 0 50px #FFD700, inset 0 0 30px #FFD700;
+            }
+            50% { 
+                box-shadow: 0 0 70px #FFD700, inset 0 0 50px #FFD700;
+            }
+        }
+        
+        .saint-title { 
+            font-family: 'Cinzel', serif; 
+            font-size: clamp(22px, 4.5vw, 36px);
+            color: #FFD700; 
+            margin-bottom: clamp(12px, 2vw, 20px);
+            text-shadow: 3px 3px 0 #000, 0 0 40px #FFD700; 
+            position: relative; 
+            z-index: 1;
+            animation: titleShimmer 3s ease-in-out infinite;
+        }
+        
+        @keyframes titleShimmer {
+            0%, 100% { text-shadow: 3px 3px 0 #000, 0 0 40px #FFD700; }
+            50% { text-shadow: 3px 3px 0 #000, 0 0 60px #FFD700; }
+        }
+        
+        .saint-virtue { 
+            font-size: clamp(15px, 2.8vw, 20px);
+            color: #87CEEB; 
+            margin-bottom: clamp(15px, 2.5vw, 25px);
+            font-style: italic; 
+            position: relative; 
+            z-index: 1;
+        }
+        
+        .saint-quote { 
+            font-size: clamp(16px, 3vw, 22px);
+            line-height: 1.9; 
+            color: #f0f0f0; 
+            margin-bottom: clamp(15px, 2.5vw, 25px);
+            text-align: left;
+            font-style: italic; 
+            padding: clamp(20px, 3.5vw, 35px);
+            background: rgba(0, 0, 0, 0.6); 
+            border-left: clamp(4px, 0.6vw, 6px) solid #FFD700; 
+            border-right: clamp(4px, 0.6vw, 6px) solid #FFD700; 
+            position: relative; 
+            z-index: 1; 
+            border-radius: clamp(10px, 1.5vw, 15px);
+        }
+        
+        .saint-quote::before { 
+            content: '"'; 
+            font-size: clamp(50px, 10vw, 80px);
+            color: #FFD700; 
+            position: absolute; 
+            left: clamp(8px, 1.2vw, 12px);
+            top: clamp(-15px, -2vw, -20px);
+            opacity: 0.6; 
+            font-family: Georgia, serif;
+        }
+        
+        .saint-quote::after { 
+            content: '"'; 
+            font-size: clamp(50px, 10vw, 80px);
+            color: #FFD700; 
+            position: absolute; 
+            right: clamp(8px, 1.2vw, 12px);
+            bottom: clamp(-40px, -5vw, -50px);
+            opacity: 0.6; 
+            font-family: Georgia, serif;
+        }
+        
+        .saint-prayer { 
+            font-family: 'Cinzel', serif; 
+            font-size: clamp(20px, 4vw, 28px);
+            color: #FFD700; 
+            margin: clamp(20px, 3.5vw, 35px) 0;
+            text-shadow: 2px 2px 0 #000, 0 0 20px #FFD700; 
+            position: relative; 
+            z-index: 1; 
+            animation: prayerPulse 2s ease-in-out infinite; 
+            font-weight: 600;
+        }
+        
+        @keyframes prayerPulse { 
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        /* Large Touch-Friendly Continue Button */
+        .continue-btn { 
+            padding: clamp(18px, 3vw, 28px) clamp(40px, 8vw, 80px);
+            background: linear-gradient(180deg, #27ae60 0%, #1e8449 100%); 
+            border: clamp(4px, 0.6vw, 6px) solid #FFD700; 
+            color: #fff; 
+            font-family: 'Cinzel', serif; 
+            font-size: clamp(18px, 3.5vw, 24px);
+            cursor: pointer; 
+            text-shadow: 2px 2px 0 #000; 
+            box-shadow: 0 clamp(6px, 1vw, 10px) 0 #145a32; 
+            border-radius: clamp(12px, 2vw, 18px);
+            font-weight: 700; 
+            transition: all 0.2s;
+            animation: continueButtonPulse 2s ease-in-out infinite;
+            min-height: 60px;
+            min-width: 200px;
+        }
+        
+        @keyframes continueButtonPulse {
+            0%, 100% { 
+                box-shadow: 0 clamp(6px, 1vw, 10px) 0 #145a32, 0 0 20px rgba(39, 174, 96, 0.5);
+            }
+            50% { 
+                box-shadow: 0 clamp(6px, 1vw, 10px) 0 #145a32, 0 0 40px rgba(39, 174, 96, 0.8);
+            }
+        }
+        
+        .continue-btn:hover { 
+            background: linear-gradient(180deg, #2ecc71 0%, #229954 100%); 
+            transform: translateY(-4px);
+            box-shadow: 0 clamp(8px, 1.4vw, 14px) 0 #145a32;
+        }
+        
+        .continue-btn:active { 
+            transform: translateY(2px);
+            box-shadow: 0 clamp(3px, 0.5vw, 5px) 0 #145a32;
+        }
+        
+        /* Garden of Eden */
+        #gardenModal { 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            background: linear-gradient(135deg, #1a4d2e 0%, #2d5f3f 50%, #4a7c59 100%); 
+            display: none; 
+            align-items: center; 
+            justify-content: center; 
+            z-index: 1800; 
+            padding: clamp(15px, 3vw, 40px);
+            overflow: hidden;
+        }
+        
+        #gardenModal.active { 
+            display: flex; 
+            animation: gardenReveal 2s ease-out;
+        }
+        
+        @keyframes gardenReveal { 
+            from { opacity: 0; transform: scale(0.9); } 
+            to { opacity: 1; transform: scale(1); } 
+        }
+        
+        .garden-background { 
+            position: absolute; 
+            width: 100%; 
+            height: 100%; 
+            background: radial-gradient(circle at 20% 30%, rgba(255, 215, 0, 0.25) 0%, transparent 50%), 
+                        radial-gradient(circle at 80% 70%, rgba(135, 206, 235, 0.25) 0%, transparent 50%), 
+                        linear-gradient(180deg, #87CEEB 0%, #98D8C8 50%, #5D8B6B 100%); 
+            animation: gardenBreeze 10s ease-in-out infinite;
+        }
+        
+        @keyframes gardenBreeze { 
+            0%, 100% { opacity: 0.8; } 
+            50% { opacity: 1; } 
+        }
+        
+        .garden-flowers { 
+            position: absolute; 
+            width: 100%; 
+            height: 100%; 
+            pointer-events: none;
+        }
+        
+        .flower { 
+            position: absolute; 
+            font-size: clamp(30px, 6vw, 50px);
+            animation: flowerSway 3s ease-in-out infinite; 
+            filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.6));
+        }
+        
+        @keyframes flowerSway { 
+            0%, 100% { transform: rotate(-8deg) scale(1); }
+            50% { transform: rotate(8deg) scale(1.05); }
+        }
+        
+        .paradise-sun { 
+            position: absolute; 
+            top: clamp(30px, 6vw, 60px);
+            right: clamp(40px, 10vw, 100px);
+            width: clamp(100px, 18vw, 200px);
+            height: clamp(100px, 18vw, 200px);
+            background: radial-gradient(circle, #FFD700 0%, #FFA500 100%); 
+            border-radius: 50%; 
+            box-shadow: 0 0 120px #FFD700; 
+            animation: sunGlow 4s ease-in-out infinite;
+        }
+        
+        @keyframes sunGlow { 
+            0%, 100% { 
+                box-shadow: 0 0 120px #FFD700;
+                transform: scale(1);
+            }
+            50% { 
+                box-shadow: 0 0 180px #FFD700, 0 0 250px #FFA500;
+                transform: scale(1.05);
+            }
+        }
+        
+        .garden-content { 
+            max-width: min(95vw, 950px);
+            width: 100%;
+            text-align: center; 
+            position: relative; 
+            z-index: 10; 
+            background: rgba(255, 255, 255, 0.96); 
+            padding: clamp(35px, 6vw, 70px);
+            border-radius: clamp(25px, 3.5vw, 35px);
+            box-shadow: 0 0 100px rgba(255, 215, 0, 1); 
+            border: clamp(5px, 0.8vw, 8px) solid #FFD700;
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+        
+        .garden-title { 
+            font-family: 'Cinzel', serif; 
+            font-size: clamp(32px, 7vw, 56px);
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 50%, #FFD700 100%); 
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent; 
+            background-clip: text; 
+            margin-bottom: clamp(20px, 3.5vw, 35px);
+            animation: titleShine 3s ease-in-out infinite; 
+            font-weight: 700;
+        }
+        
+        @keyframes titleShine { 
+            0%, 100% { filter: brightness(1); }
+            50% { filter: brightness(1.4); }
+        }
+        
+        .jesus-image { 
+            font-size: clamp(80px, 15vw, 140px);
+            margin: clamp(20px, 3.5vw, 35px) 0;
+            filter: drop-shadow(0 0 40px rgba(255, 215, 0, 1)); 
+            animation: jesusGlow 2s ease-in-out infinite;
+            display: inline-block;
+        }
+        
+        @keyframes jesusGlow { 
+            0%, 100% { 
+                transform: scale(1); 
+                filter: drop-shadow(0 0 40px rgba(255, 215, 0, 1));
+            }
+            50% { 
+                transform: scale(1.12); 
+                filter: drop-shadow(0 0 70px rgba(255, 215, 0, 1));
+            }
+        }
+        
+        .garden-text { 
+            font-size: clamp(17px, 3.2vw, 24px);
+            line-height: 2; 
+            color: #2c1810; 
+            margin-bottom: clamp(18px, 3vw, 30px);
+            text-align: left;
+            font-style: italic;
+        }
+        
+        .garden-verse { 
+            font-size: clamp(16px, 3vw, 22px);
+            color: #8B4513; 
+            margin: clamp(20px, 3.5vw, 35px) 0;
+            padding: clamp(18px, 3vw, 30px);
+            background: rgba(255, 215, 0, 0.25); 
+            border-radius: clamp(15px, 2vw, 20px);
+            border: clamp(3px, 0.5vw, 5px) solid #FFD700; 
+            font-weight: 600;
+            text-align: left;
+        }
+        
+        .enter-garden-btn { 
+            padding: clamp(20px, 3.5vw, 32px) clamp(50px, 10vw, 90px);
+            background: linear-gradient(180deg, #FFD700 0%, #FFA500 100%); 
+            border: clamp(4px, 0.7vw, 7px) solid #8B6914; 
+            color: #000; 
+            font-family: 'Cinzel', serif; 
+            font-size: clamp(18px, 3.5vw, 26px);
+            cursor: pointer; 
+            font-weight: 700; 
+            text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.5); 
+            box-shadow: 0 clamp(6px, 1.2vw, 12px) 0 #6B5410; 
+            border-radius: clamp(15px, 2vw, 20px);
+            transition: all 0.3s; 
+            text-transform: uppercase;
+            animation: buttonGlow 2s ease-in-out infinite;
+            min-height: 70px;
+        }
+        
+        @keyframes buttonGlow {
+            0%, 100% { 
+                box-shadow: 0 clamp(6px, 1.2vw, 12px) 0 #6B5410, 0 0 30px rgba(255, 215, 0, 0.6);
+            }
+            50% { 
+                box-shadow: 0 clamp(6px, 1.2vw, 12px) 0 #6B5410, 0 0 50px rgba(255, 215, 0, 0.9);
+            }
+        }
+        
+        .enter-garden-btn:hover { 
+            background: linear-gradient(180deg, #FFEB3B 0%, #FFB300 100%); 
+            transform: translateY(-5px);
+        }
+        
+        .enter-garden-btn:active { 
+            transform: translateY(3px);
+        }
+        
+        /* Paradise Scene */
+        #paradiseScene { 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            background: linear-gradient(180deg, #87CEEB 0%, #E0F6FF 50%, #90EE90 100%); 
+            display: none; 
+            align-items: center; 
+            justify-content: center; 
+            z-index: 2000; 
+            overflow: hidden;
+            padding: clamp(15px, 3vw, 40px);
+        }
+        
+        #paradiseScene.active { 
+            display: flex; 
+            animation: paradiseFade 3s ease-out;
+        }
+        
+        @keyframes paradiseFade { 
+            from { opacity: 0; } 
+            to { opacity: 1; } 
+        }
+        
+        .paradise-content { 
+            text-align: center; 
+            z-index: 10; 
+            background: rgba(255, 255, 255, 0.92); 
+            padding: clamp(40px, 7vw, 90px);
+            border-radius: clamp(30px, 4.5vw, 45px);
+            box-shadow: 0 0 120px rgba(255, 215, 0, 1); 
+            border: clamp(6px, 1vw, 10px) solid #FFD700; 
+            max-width: min(95vw, 1050px);
+            width: 100%;
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+        
+        .paradise-title { 
+            font-family: 'Cinzel', serif; 
+            font-size: clamp(36px, 8vw, 64px);
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 50%, #FFD700 100%); 
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent; 
+            background-clip: text; 
+            margin-bottom: clamp(25px, 4.5vw, 45px);
+            animation: titleRainbow 3s ease-in-out infinite; 
+            font-weight: 700;
+        }
+        
+        @keyframes titleRainbow { 
+            0%, 100% { filter: hue-rotate(0deg) brightness(1.3); }
+            50% { filter: hue-rotate(25deg) brightness(1.6); }
+        }
+        
+        .paradise-message { 
+            font-size: clamp(18px, 3.5vw, 26px);
+            line-height: 2.1; 
+            color: #2c1810; 
+            margin-bottom: clamp(25px, 4.5vw, 45px);
+            font-style: italic;
+            text-align: left;
+        }
+        
+        .paradise-blessing { 
+            font-family: 'Cinzel', serif; 
+            font-size: clamp(20px, 4vw, 32px);
+            color: #8B4513; 
+            margin: clamp(25px, 4.5vw, 45px) 0;
+            padding: clamp(22px, 3.5vw, 35px);
+            background: rgba(255, 215, 0, 0.35); 
+            border-radius: clamp(18px, 2.5vw, 25px);
+            border: clamp(4px, 0.6vw, 6px) solid #FFD700; 
+            font-weight: 700;
+            text-align: left;
+        }
+        
+        /* Prayer Text Display */
+        #prayerTextDisplay { 
+            position: fixed; 
+            bottom: clamp(180px, 20vh, 240px);
+            right: clamp(10px, 2vw, 20px);
+            width: min(90vw, 370px);
+            max-height: 50vh;
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.96), rgba(26, 26, 46, 0.96)); 
+            border: clamp(2px, 0.4vw, 4px) solid #FFD700; 
+            border-radius: clamp(12px, 1.8vw, 18px);
+            padding: clamp(12px, 2.5vw, 25px);
+            box-shadow: 0 0 40px rgba(255, 215, 0, 0.7); 
+            display: none; 
+            z-index: 600; 
+            overflow-y: auto;
+        }
+        
+        #prayerTextDisplay.active { 
+            display: block; 
+            animation: slideInRight 0.5s ease-out;
+        }
+        
+        @keyframes slideInRight { 
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        .prayer-text-title { 
+            font-family: 'Cinzel', serif; 
+            font-size: clamp(14px, 2.5vw, 19px);
+            color: #FFD700; 
+            margin-bottom: clamp(10px, 1.8vw, 18px);
+            text-align: center; 
+            text-shadow: 2px 2px 0 #000; 
+            border-bottom: clamp(2px, 0.3vw, 3px) solid #FFD700; 
+            padding-bottom: clamp(8px, 1.2vw, 12px);
+        }
+        
+        .prayer-text-content { 
+            font-size: clamp(12px, 2vw, 15px);
+            line-height: 1.9; 
+            color: #f0f0f0; 
+            text-align: justify; 
+            font-style: italic;
+        }
+        
+        .close-prayer-text { 
+            margin-top: clamp(10px, 1.8vw, 18px);
+            padding: clamp(10px, 1.5vw, 15px) clamp(20px, 3vw, 30px);
+            background: linear-gradient(180deg, #27ae60 0%, #1e8449 100%); 
+            border: clamp(2px, 0.3vw, 3px) solid #FFD700; 
+            color: #fff; 
+            font-family: 'Cinzel', serif; 
+            font-size: clamp(12px, 2vw, 15px);
+            cursor: pointer; 
+            border-radius: clamp(8px, 1vw, 10px);
+            display: block; 
+            margin-left: auto; 
+            margin-right: auto; 
+            transition: all 0.2s;
+            min-height: 44px;
+        }
+        
+        .close-prayer-text:hover { 
+            transform: translateY(-3px); 
+            box-shadow: 0 6px 12px rgba(39, 174, 96, 0.6);
+        }
+        
+        /* Prayer Selection Modal */
+        #prayerSelection { 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            background: rgba(0, 0, 0, 0.92); 
+            display: none; 
+            align-items: center; 
+            justify-content: center; 
+            z-index: 1600;
+            padding: clamp(15px, 3vw, 40px);
+        }
+        
+        #prayerSelection.active { 
+            display: flex;
+        }
+        
+        .prayer-modal { 
+            background: linear-gradient(135deg, rgba(15, 12, 41, 0.98), rgba(48, 43, 99, 0.98)); 
+            border: clamp(3px, 0.6vw, 6px) solid #FFD700; 
+            border-radius: clamp(15px, 2.3vw, 23px);
+            padding: clamp(25px, 4.5vw, 45px);
+            max-width: min(95vw, 650px);
+            width: 100%;
+            box-shadow: 0 0 60px rgba(255, 215, 0, 0.8);
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+        
+        .prayer-modal-title { 
+            font-family: 'Cinzel', serif; 
+            font-size: clamp(20px, 4.5vw, 32px);
+            color: #FFD700; 
+            text-align: center; 
+            margin-bottom: clamp(20px, 3.5vw, 35px);
+            text-shadow: 3px 3px 0 #000;
+        }
+        
+        .prayer-options { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(clamp(140px, 35vw, 220px), 1fr));
+            gap: clamp(12px, 2vw, 20px);
+            margin-bottom: clamp(15px, 2.5vw, 25px);
+        }
+        
+        .prayer-option { 
+            padding: clamp(15px, 2.5vw, 25px);
+            background: linear-gradient(180deg, #9b59b6 0%, #6c3483 100%); 
+            border: clamp(3px, 0.5vw, 5px) solid #FFD700; 
+            border-radius: clamp(10px, 1.5vw, 15px);
+            cursor: pointer; 
+            transition: all 0.2s; 
+            text-align: center; 
+            box-shadow: 0 clamp(4px, 0.6vw, 6px) 0 #4a235a;
+            animation: prayerOptionFloat 3s ease-in-out infinite;
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        @keyframes prayerOptionFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-3px); }
+        }
+        
+        .prayer-option:hover { 
+            transform: translateY(-5px);
+            box-shadow: 0 clamp(6px, 1vw, 10px) 0 #4a235a, 0 0 25px rgba(155, 89, 182, 0.6);
+        }
+        
+        .prayer-option:active { 
+            transform: translateY(2px); 
+            box-shadow: 0 clamp(2px, 0.3vw, 3px) 0 #4a235a;
+        }
+        
+        .prayer-icon { 
+            font-size: clamp(35px, 7vw, 50px);
+            margin-bottom: clamp(10px, 1.5vw, 15px);
+            animation: iconPulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes iconPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
+        .prayer-name { 
+            font-family: 'Cinzel', serif; 
+            font-size: clamp(13px, 2.2vw, 16px);
+            color: #fff; 
+            text-shadow: 2px 2px 0 #000; 
+            font-weight: 600;
+        }
+        
+        .prayer-damage { 
+            font-size: clamp(11px, 2vw, 14px);
+            color: #FFD700; 
+            margin-top: clamp(6px, 0.8vw, 8px);
+        }
+        
+        /* Enhanced Prayer Effects */
+        .prayer-effect-cross { 
+            position: absolute; 
+            font-size: clamp(45px, 9vw, 75px);
+            color: #FFD700; 
+            text-shadow: 0 0 30px #FFD700; 
+            animation: crossEffect 2s ease-out forwards; 
+            z-index: 50; 
+            pointer-events: none;
+        }
+        
+        @keyframes crossEffect { 
+            0% { transform: scale(0) rotate(0deg); opacity: 0; }
+            30% { opacity: 1; }
+            100% { transform: scale(3.5) rotate(720deg); opacity: 0; }
+        }
+        
+        .prayer-effect-rose { 
+            position: absolute; 
+            font-size: clamp(22px, 4.5vw, 38px);
+            animation: roseSpiral 2s ease-out forwards; 
+            z-index: 50; 
+            pointer-events: none;
+        }
+        
+        @keyframes roseSpiral { 
+            0% { transform: translate(0, 0) rotate(0deg) scale(1); opacity: 1; }
+            100% { transform: translate(var(--tx), var(--ty)) rotate(720deg) scale(0.5); opacity: 0; }
+        }
+        
+        .prayer-effect-glory { 
+            position: absolute; 
+            width: clamp(10px, 1.5vw, 14px);
+            height: clamp(10px, 1.5vw, 14px);
+            background: radial-gradient(circle, #fff, #FFD700); 
+            border-radius: 50%; 
+            animation: gloryBurst 1.5s ease-out forwards; 
+            z-index: 50; 
+            pointer-events: none; 
+            box-shadow: 0 0 25px #FFD700;
+        }
+        
+        @keyframes gloryBurst { 
+            0% { transform: translate(0, 0) scale(1); opacity: 1; }
+            100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; }
+        }
+        
+        .prayer-effect-jesus { 
+            position: absolute; 
+            font-size: clamp(40px, 8vw, 60px);
+            animation: jesusAscend 2.5s ease-out forwards; 
+            z-index: 50; 
+            pointer-events: none; 
+            text-shadow: 0 0 40px rgba(255, 215, 0, 0.9);
+        }
+        
+        @keyframes jesusAscend { 
+            0% { transform: translateY(clamp(70px, 12vw, 120px)) scale(0.5); opacity: 0; }
+            20% { opacity: 1; }
+            100% { transform: translateY(clamp(-140px, -24vw, -240px)) scale(1.6); opacity: 0; }
+        }
+        
+        /* Intro Screen */
+        #introScreen { 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e); 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            z-index: 2000; 
+            padding: clamp(15px, 3vw, 40px);
+        }
+        
+        #introScreen.hidden { 
+            display: none;
+        }
+        
+        .intro-content { 
+            max-width: min(95vw, 850px);
+            width: 100%;
+            text-align: center; 
+            background: rgba(0, 0, 0, 0.85); 
+            padding: clamp(30px, 5vw, 55px);
+            border: clamp(4px, 0.6vw, 6px) solid #FFD700; 
+            border-radius: clamp(18px, 2.5vw, 25px);
+            box-shadow: 0 0 50px rgba(255, 215, 0, 0.6);
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+        
+        .intro-title { 
+            font-family: 'Cinzel', serif; 
+            font-size: clamp(28px, 6.5vw, 56px);
+            color: #FFD700; 
+            margin-bottom: clamp(20px, 3.5vw, 35px);
+            text-shadow: 4px 4px 0 #000;
+            animation: titlePulse 3s ease-in-out infinite;
+        }
+        
+        @keyframes titlePulse {
+            0%, 100% { 
+                text-shadow: 4px 4px 0 #000, 0 0 30px #FFD700;
+                transform: scale(1);
+            }
+            50% { 
+                text-shadow: 4px 4px 0 #000, 0 0 50px #FFD700;
+                transform: scale(1.02);
+            }
+        }
+        
+        .intro-text { 
+            font-size: clamp(15px, 2.8vw, 22px);
+            line-height: 1.9; 
+            margin-bottom: clamp(15px, 2.8vw, 28px);
+            color: #f0f0f0; 
+            text-align: left;
+            font-style: italic;
+        }
+        
+        .intro-quote { 
+            font-size: clamp(16px, 3.2vw, 26px);
+            color: #FFD700; 
+            margin: clamp(20px, 3.5vw, 35px) 0;
+            font-weight: 600; 
+            text-shadow: 2px 2px 0 #000;
+        }
+        
+        .start-btn { 
+            padding: clamp(18px, 3vw, 28px) clamp(40px, 8vw, 70px);
+            background: linear-gradient(180deg, #FFD700 0%, #FFA500 100%); 
+            border: clamp(4px, 0.6vw, 6px) solid #fff; 
+            color: #000; 
+            font-family: 'Cinzel', serif; 
+            font-size: clamp(18px, 3.5vw, 28px);
+            cursor: pointer; 
+            font-weight: 700; 
+            text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.5); 
+            box-shadow: 0 clamp(6px, 1vw, 10px) 0 #8B6914; 
+            border-radius: clamp(12px, 1.8vw, 15px);
+            transition: all 0.2s; 
+            margin-top: clamp(18px, 2.5vw, 25px);
+            animation: startButtonGlow 2s ease-in-out infinite;
+            min-height: 65px;
+        }
+        
+        @keyframes startButtonGlow {
+            0%, 100% { 
+                box-shadow: 0 clamp(6px, 1vw, 10px) 0 #8B6914, 0 0 25px rgba(255, 215, 0, 0.5);
+            }
+            50% { 
+                box-shadow: 0 clamp(6px, 1vw, 10px) 0 #8B6914, 0 0 45px rgba(255, 215, 0, 0.8);
+            }
+        }
+        
+        .start-btn:hover { 
+            background: linear-gradient(180deg, #FFEB3B 0%, #FFB300 100%); 
+            transform: translateY(-4px);
+            box-shadow: 0 clamp(8px, 1.4vw, 14px) 0 #8B6914;
+        }
+        
+        .start-btn:active { 
+            transform: translateY(3px);
+            box-shadow: 0 clamp(3px, 0.5vw, 5px) 0 #8B6914;
+        }
+        
+        /* Game Container */
+        #gameContainer { 
+            width: 100vw; 
+            height: 100vh; 
+            display: flex; 
+            flex-direction: column; 
+            position: relative;
+        }
+        
+        #battleField { 
+            flex: 1; 
+            position: relative; 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+            padding: clamp(20px, 4vw, 55px);
+            background: radial-gradient(ellipse at top, rgba(255, 215, 0, 0.18) 0%, transparent 50%), 
+                        linear-gradient(180deg, #1a0033 0%, #0f001a 100%); 
+            overflow: hidden;
+        }
+        
+        #battleField::before { 
+            content: ''; 
+            position: absolute; 
+            top: 0; 
+            left: 0; 
+            right: 0; 
+            bottom: 0; 
+            background: radial-gradient(ellipse at 30% 50%, rgba(255, 215, 0, 0.1) 0%, transparent 50%), 
+                        radial-gradient(ellipse at 70% 50%, rgba(138, 43, 226, 0.1) 0%, transparent 50%); 
+            animation: backgroundPulse 4s ease-in-out infinite; 
+            pointer-events: none;
+        }
+        
+        @keyframes backgroundPulse { 
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+        
+        .party-side { 
+            display: flex; 
+            flex-direction: column; 
+            gap: clamp(20px, 3vw, 35px);
+            z-index: 10;
+        }
+        
+        .enemy-side { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            z-index: 10;
+        }
+        
+        .character { 
+            position: relative; 
+            text-align: center;
+        }
+        
+        .hero-sprite { 
+            font-size: clamp(55px, 9vw, 90px);
+            animation: heroFloat 3s ease-in-out infinite; 
+            filter: drop-shadow(0 0 18px rgba(255, 215, 0, 0.7)); 
+            position: relative;
+        }
+        
+        @keyframes heroFloat { 
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(clamp(-10px, -1.5vw, -15px)); }
+        }
+        
+        .hero-sprite::after { 
+            content: ''; 
+            position: absolute; 
+            top: 50%; 
+            left: 50%; 
+            transform: translate(-50%, -50%); 
+            width: 125%; 
+            height: 125%; 
+            background: radial-gradient(circle, rgba(255, 215, 0, 0.3) 0%, transparent 70%); 
+            border-radius: 50%; 
+            animation: heroAura 3s ease-in-out infinite; 
+            z-index: -1;
+        }
+        
+        @keyframes heroAura { 
+            0%, 100% { 
+                transform: translate(-50%, -50%) scale(1); 
+                opacity: 0.5;
+            }
+            50% { 
+                transform: translate(-50%, -50%) scale(1.25); 
+                opacity: 1;
+            }
+        }
+        
+        .enemy-sprite { 
+            font-size: clamp(75px, 12vw, 115px);
+            animation: enemyFloat 2s ease-in-out infinite; 
+            filter: drop-shadow(0 0 25px rgba(255, 0, 0, 0.8)); 
+            margin-bottom: clamp(15px, 2.5vw, 25px);
+            position: relative;
+        }
+        
+        @keyframes enemyFloat { 
+            0%, 100% { transform: translateY(0px) rotate(-7deg); }
+            50% { transform: translateY(clamp(-12px, -1.6vw, -16px)) rotate(7deg); }
+        }
+        
+        .enemy-sprite::after { 
+            content: ''; 
+            position: absolute; 
+            top: 50%; 
+            left: 50%; 
+            transform: translate(-50%, -50%); 
+            width: 135%; 
+            height: 135%; 
+            background: radial-gradient(circle, rgba(255, 0, 0, 0.4) 0%, transparent 70%); 
+            border-radius: 50%; 
+            animation: enemyAura 2s ease-in-out infinite; 
+            z-index: -1;
+        }
+        
+        @keyframes enemyAura { 
+            0%, 100% { 
+                transform: translate(-50%, -50%) scale(1) rotate(0deg); 
+                opacity: 0.6;
+            }
+            50% { 
+                transform: translate(-50%, -50%) scale(1.35) rotate(180deg); 
+                opacity: 1;
+            }
+        }
+        
+        .character-name { 
+            font-family: 'Cinzel', serif; 
+            font-size: clamp(13px, 2.2vw, 18px);
+            margin-top: clamp(10px, 1.7vw, 17px);
+            text-shadow: 2px 2px 0 #000, 0 0 15px #FFD700; 
+            color: #FFD700; 
+            font-weight: 700;
+        }
+        
+        .sin-name { 
+            font-size: clamp(18px, 3.5vw, 28px);
+            color: #ff4444; 
+            margin-bottom: clamp(12px, 2vw, 20px);
+            text-transform: uppercase; 
+            letter-spacing: clamp(2px, 0.4vw, 4px);
+            text-shadow: 2px 2px 0 #000, 0 0 20px #ff0000;
+            animation: sinNamePulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes sinNamePulse {
+            0%, 100% { 
+                text-shadow: 2px 2px 0 #000, 0 0 20px #ff0000;
+            }
+            50% { 
+                text-shadow: 2px 2px 0 #000, 0 0 35px #ff0000;
+            }
+        }
+        
+        /* HP Bars */
+        .hp-bar-container { 
+            width: clamp(130px, 22vw, 170px);
+            height: clamp(22px, 3.5vw, 30px);
+            background: #000; 
+            border: clamp(3px, 0.5vw, 5px) solid #FFD700; 
+            margin: clamp(10px, 1.5vw, 15px) auto;
+            position: relative; 
+            box-shadow: 0 0 25px rgba(255, 215, 0, 0.5), inset 0 0 12px rgba(255, 215, 0, 0.25); 
+            border-radius: clamp(5px, 0.8vw, 8px);
+            animation: borderGlow 2s ease-in-out infinite;
+        }
+        
+        @keyframes borderGlow { 
+            0%, 100% { 
+                box-shadow: 0 0 25px rgba(255, 215, 0, 0.5), inset 0 0 12px rgba(255, 215, 0, 0.25);
+            }
+            50% { 
+                box-shadow: 0 0 35px rgba(255, 215, 0, 0.8), inset 0 0 18px rgba(255, 215, 0, 0.35);
+            }
+        }
+        
+        .hp-bar { 
+            height: 100%; 
+            background: linear-gradient(90deg, #00ff00 0%, #ffff00 50%, #ff0000 100%); 
+            transition: width 0.5s ease; 
+            box-shadow: inset 0 0 12px rgba(255, 255, 255, 0.35); 
+            border-radius: clamp(4px, 0.6vw, 6px);
+        }
+        
+        .hp-text { 
+            position: absolute; 
+            top: 50%; 
+            left: 50%; 
+            transform: translate(-50%, -50%); 
+            font-size: clamp(11px, 2vw, 14px);
+            color: #fff; 
+            text-shadow: 1px 1px 0 #000; 
+            font-weight: bold; 
+            z-index: 1; 
+            font-family: 'Crimson Text', serif;
+        }
+        
+        /* Damage Numbers */
+        .damage-number { 
+            position: absolute; 
+            font-size: clamp(28px, 5.5vw, 40px);
+            color: #ff0000; 
+            text-shadow: 4px 4px 0 #000, -1px -1px 0 #fff; 
+            animation: damageFloat 1.2s ease-out forwards; 
+            pointer-events: none; 
+            font-weight: bold; 
+            z-index: 100; 
+            font-family: 'Cinzel', serif;
+        }
+        
+        @keyframes damageFloat { 
+            0% { transform: translateY(0) scale(1); opacity: 1; }
+            100% { transform: translateY(clamp(-90px, -15vw, -140px)) scale(2); opacity: 0; }
+        }
+        
+        .heal-number { 
+            color: #00ff00;
+        }
+        
+        /* Menu Container */
+        #menuContainer { 
+            height: clamp(160px, 26vh, 240px);
+            background: rgba(0, 0, 0, 0.96); 
+            border-top: clamp(4px, 0.6vw, 6px) solid #FFD700; 
+            display: flex; 
+            position: relative; 
+            box-shadow: 0 clamp(-4px, -0.7vw, -7px) clamp(20px, 3.5vw, 35px) rgba(255, 215, 0, 0.4);
+        }
+        
+        #battleLog { 
+            flex: 1; 
+            padding: clamp(15px, 2.5vw, 25px);
+            overflow-y: auto; 
+            font-size: clamp(12px, 2.2vw, 16px);
+            line-height: 2.1; 
+            border-right: clamp(3px, 0.5vw, 5px) solid #FFD700;
+        }
+        
+        .log-entry { 
+            margin: clamp(6px, 1vw, 10px) 0;
+            color: #fff; 
+            text-shadow: 1px 1px 0 #000;
+        }
+        
+        .log-damage { 
+            color: #ff6b6b; 
+            font-weight: 600;
+        }
+        
+        .log-prayer { 
+            color: #51cf66; 
+            font-style: italic;
+        }
+        
+        .log-system { 
+            color: #ffd43b; 
+            font-weight: 600;
+        }
+        
+        #actionMenu { 
+            width: clamp(280px, 48vw, 490px);
+            padding: clamp(15px, 2.5vw, 25px);
+            display: flex; 
+            flex-direction: column; 
+            gap: clamp(12px, 1.8vw, 18px);
+        }
+        
+        .menu-section { 
+            display: flex; 
+            flex-direction: column; 
+            gap: clamp(10px, 1.5vw, 15px);
+        }
+        
+        .menu-title { 
+            font-family: 'Cinzel', serif; 
+            font-size: clamp(13px, 2.2vw, 16px);
+            color: #FFD700; 
+            text-shadow: 2px 2px 0 #000; 
+            margin-bottom: clamp(5px, 0.8vw, 8px);
+            font-weight: 600;
+        }
+        
+        .menu-buttons { 
+            display: grid; 
+            grid-template-columns: repeat(2, 1fr); 
+            gap: clamp(10px, 1.6vw, 16px);
+        }
+        
+        .menu-btn { 
+            padding: clamp(12px, 2vw, 20px);
+            background: linear-gradient(180deg, #4a90e2 0%, #2e5c8a 100%); 
+            border: clamp(3px, 0.5vw, 5px) solid #FFD700; 
+            color: #fff; 
+            font-family: 'Cinzel', serif; 
+            font-size: clamp(11px, 2vw, 14px);
+            cursor: pointer; 
+            text-shadow: 1px 1px 0 #000; 
+            transition: all 0.15s; 
+            box-shadow: 0 clamp(4px, 0.6vw, 6px) 0 #1a4d7a; 
+            border-radius: clamp(6px, 0.8vw, 8px);
+            font-weight: 600;
+            min-height: 50px;
+        }
+        
+        .menu-btn:hover { 
+            background: linear-gradient(180deg, #5aa3ff 0%, #3d6fa3 100%); 
+            transform: translateY(-3px);
+            box-shadow: 0 clamp(6px, 1vw, 10px) 0 #1a4d7a;
+        }
+        
+        .menu-btn:active { 
+            transform: translateY(2px); 
+            box-shadow: 0 clamp(2px, 0.3vw, 3px) 0 #1a4d7a;
+        }
+        
+        .menu-btn.prayer { 
+            background: linear-gradient(180deg, #9b59b6 0%, #6c3483 100%); 
+            box-shadow: 0 clamp(4px, 0.6vw, 6px) 0 #4a235a;
+        }
+        
+        .menu-btn.prayer:hover { 
+            background: linear-gradient(180deg, #ae6bc7 0%, #7d3c98 100%);
+        }
+        
+        /* Passage Overlay */
+        #passageOverlay { 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            background: rgba(0, 0, 0, 0.96); 
+            display: none; 
+            align-items: center; 
+            justify-content: center; 
+            z-index: 1500; 
+            padding: clamp(15px, 3vw, 45px);
+        }
+        
+        #passageOverlay.active { 
+            display: flex;
+        }
+        
+        .passage-content { 
+            max-width: min(95vw, 800px);
+            width: 100%;
+            background: rgba(0, 0, 0, 0.92); 
+            padding: clamp(30px, 5vw, 60px);
+            border: clamp(4px, 0.7vw, 7px) solid #FFD700; 
+            border-radius: clamp(18px, 2.5vw, 25px);
+            box-shadow: 0 0 60px rgba(255, 215, 0, 0.8); 
+            text-align: center;
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+        
+        .passage-title { 
+            font-family: 'Cinzel', serif; 
+            font-size: clamp(22px, 4.5vw, 34px);
+            color: #FFD700; 
+            margin-bottom: clamp(18px, 3vw, 30px);
+            text-shadow: 3px 3px 0 #000;
+        }
+        
+        .passage-text { 
+            font-size: clamp(15px, 2.8vw, 20px);
+            line-height: 1.9; 
+            color: #f0f0f0; 
+            margin-bottom: clamp(20px, 3.5vw, 35px);
+            text-align: left;
+            font-style: italic;
+        }
+        
+        .passage-reference { 
+            font-size: clamp(13px, 2.2vw, 16px);
+            color: #FFD700; 
+            font-weight: 600; 
+            margin-bottom: clamp(20px, 3.5vw, 35px);
+        }
+        
+        /* Credits Screen with Scroll */
+        #creditsScreen { 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e); 
+            display: none; 
+            align-items: center; 
+            justify-content: center; 
+            z-index: 2000; 
+            padding: clamp(20px, 3vw, 45px);
+            overflow-y: auto;
+        }
+        
+        #creditsScreen.active { 
+            display: flex;
+        }
+        
+        .credits-content { 
+            max-width: min(95vw, 1000px);
+            width: 100%;
+            text-align: center; 
+            padding: clamp(30px, 5vw, 60px);
+        }
+        
+        .credits-title { 
+            font-family: 'Cinzel', serif; 
+            font-size: clamp(32px, 7vw, 56px);
+            color: #FFD700; 
+            margin-bottom: clamp(30px, 5vw, 60px);
+            text-shadow: 5px 5px 0 #000; 
+            animation: titleGlow 2s ease-in-out infinite;
+            line-height: 1.3;
+        }
+        
+        @keyframes titleGlow { 
+            0%, 100% { text-shadow: 5px 5px 0 #000, 0 0 25px #FFD700; }
+            50% { text-shadow: 5px 5px 0 #000, 0 0 50px #FFD700; }
+        }
+        
+        .credits-section { 
+            background: rgba(0, 0, 0, 0.75); 
+            padding: clamp(22px, 3.5vw, 40px);
+            border: clamp(3px, 0.5vw, 5px) solid #FFD700; 
+            border-radius: clamp(15px, 2vw, 20px);
+            margin-bottom: clamp(22px, 3.5vw, 40px);
+            box-shadow: 0 0 35px rgba(255, 215, 0, 0.5);
+        }
+        
+        .credits-subtitle { 
+            font-family: 'Cinzel', serif; 
+            font-size: clamp(20px, 3.8vw, 30px);
+            color: #FFD700; 
+            margin-bottom: clamp(15px, 2.5vw, 25px);
+            font-weight: 600;
+        }
+        
+        .credits-text { 
+            font-size: clamp(15px, 2.8vw, 20px);
+            line-height: 2; 
+            color: #f0f0f0; 
+            text-align: left;
+            margin-bottom: clamp(12px, 2vw, 20px);
+            font-style: italic;
+        }
+        
+        .saint-list {
+            font-size: clamp(16px, 3vw, 22px);
+            line-height: 2.2;
+            color: #FFD700;
+            font-weight: 600;
+        }
+        
+        /* Animation Effects */
+        .character.attacking { 
+            animation: attackMove 0.6s ease-in-out;
+        }
+        
+        @keyframes attackMove { 
+            0%, 100% { transform: translateX(0) scale(1); }
+            50% { transform: translateX(clamp(35px, 6vw, 60px)) scale(1.25); }
+        }
+        
+        .character.damaged { 
+            animation: damageShake 0.5s ease-in-out;
+        }
+        
+        @keyframes damageShake { 
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(clamp(-12px, -2vw, -18px)); }
+            75% { transform: translateX(clamp(12px, 2vw, 18px)); }
+        }
+        
+        .prayer-animation { 
+            position: absolute; 
+            font-size: clamp(40px, 8vw, 60px);
+            animation: prayerRise 1.5s ease-out forwards; 
+            z-index: 50; 
+            pointer-events: none;
+        }
+        
+        @keyframes prayerRise { 
+            0% { transform: translateY(0) scale(0.5); opacity: 0; }
+            30% { opacity: 1; }
+            100% { transform: translateY(clamp(-110px, -18vw, -180px)) scale(1.6); opacity: 0; }
+        }
+        
+        .divine-light { 
+            position: fixed; 
+            top: -100%; 
+            left: 50%; 
+            transform: translateX(-50%); 
+            width: clamp(220px, 35vw, 350px);
+            height: 200%; 
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.95) 10%, rgba(255, 215, 0, 0.75) 30%, rgba(255, 255, 255, 0.55) 50%, rgba(255, 255, 255, 0) 100%); 
+            pointer-events: none; 
+            z-index: 200; 
+            animation: divineDescend 2s ease-out forwards; 
+            filter: blur(clamp(18px, 2.5vw, 25px));
+            box-shadow: 0 0 110px rgba(255, 255, 255, 0.9);
+        }
+        
+        @keyframes divineDescend { 
+            0% { top: -100%; opacity: 0; }
+            50% { opacity: 1; }
+            100% { top: 100%; opacity: 0; }
+        }
+        
+        .particle { 
+            position: absolute; 
+            width: clamp(7px, 1vw, 10px);
+            height: clamp(7px, 1vw, 10px);
+            background: radial-gradient(circle, #FFD700 0%, transparent 70%); 
+            border-radius: 50%; 
+            pointer-events: none; 
+            animation: particleFloat 3s ease-out forwards; 
+            box-shadow: 0 0 12px #FFD700;
+        }
+        
+        @keyframes particleFloat { 
+            0% { transform: translateY(0) scale(1); opacity: 1; }
+            100% { transform: translateY(clamp(-220px, -35vw, -350px)) scale(0); opacity: 0; }
+        }
+        
+        .victory-sparkle { 
+            position: absolute; 
+            width: clamp(4px, 0.6vw, 6px);
+            height: clamp(4px, 0.6vw, 6px);
+            background: #FFD700; 
+            border-radius: 50%; 
+            pointer-events: none; 
+            animation: sparkle 1.5s ease-out forwards; 
+            box-shadow: 0 0 12px #FFD700;
+        }
+        
+        @keyframes sparkle { 
+            0% { transform: translate(0, 0) scale(0); opacity: 1; }
+            100% { transform: translate(var(--tx), var(--ty)) scale(1); opacity: 0; }
+        }
+        
+        .slash-effect { 
+            position: absolute; 
+            font-size: clamp(55px, 10vw, 90px);
+            color: #FFD700; 
+            text-shadow: 0 0 25px #FFD700; 
+            animation: slashAnimation 0.6s ease-out forwards; 
+            pointer-events: none; 
+            z-index: 150;
+        }
+        
+        @keyframes slashAnimation { 
+            0% { transform: translateX(clamp(-80px, -12vw, -120px)) rotate(-45deg) scale(0.5); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: translateX(clamp(80px, 12vw, 120px)) rotate(45deg) scale(1.6); opacity: 0; }
+        }
+        
+        #audioControls { 
+            position: fixed; 
+            bottom: clamp(170px, 22vh, 250px);
+            right: clamp(12px, 2vw, 25px);
+            z-index: 500; 
+            background: rgba(0, 0, 0, 0.85); 
+            padding: clamp(10px, 1.5vw, 15px);
+            border: clamp(3px, 0.4vw, 4px) solid #FFD700; 
+            border-radius: clamp(8px, 1.2vw, 12px);
+            display: flex; 
+            gap: clamp(10px, 1.5vw, 15px);
+        }
+        
+        .audio-btn { 
+            background: linear-gradient(180deg, #FFD700 0%, #FFA500 100%); 
+            border: clamp(2px, 0.3vw, 3px) solid #fff; 
+            color: #000; 
+            font-size: clamp(18px, 3.5vw, 24px);
+            width: clamp(38px, 6vw, 50px);
+            height: clamp(38px, 6vw, 50px);
+            border-radius: 50%; 
+            cursor: pointer; 
+            transition: all 0.2s; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+        }
+        
+        .audio-btn:hover { 
+            transform: scale(1.15); 
+            box-shadow: 0 0 18px #FFD700;
+        }
+        
+        /* Mobile Adjustments */
+        @media (max-width: 768px) {
+            #battleField {
+                flex-direction: column;
+                justify-content: space-around;
+            }
+            
+            .party-side {
+                flex-direction: row;
+                gap: clamp(25px, 10vw, 50px);
+            }
+            
+            #actionMenu {
+                width: 100%;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .prayer-options {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-height: 600px) and (orientation: landscape) {
+            #menuContainer {
+                height: 28vh;
+            }
+        }
+        
+        * {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+        
+        button {
+            -webkit-tap-highlight-color: transparent;
+            outline: none;
+        }
+        
+        * {
+            scrollbar-width: thin;
+            scrollbar-color: #FFD700 rgba(0, 0, 0, 0.3);
+        }
+        
+        *::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+        
+        *::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.3);
+        }
+        
+        *::-webkit-scrollbar-thumb {
+            background: #FFD700;
+            border-radius: 5px;
+        }
+        
+        *::-webkit-scrollbar-thumb:hover {
+            background: #FFA500;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Intro Screen -->
+    <div id="introScreen">
+        <div class="intro-content">
+            <div class="intro-title">⛪ BATTLE FOR VIRTUE ⛪</div>
+            <div class="intro-text">
+                "Man is divided in himself. As a result, the whole life of men, both individual and social, shows itself to be a struggle, and a dramatic one, between good and evil, between light and darkness."
+            </div>
+            <div style="font-size: clamp(12px, 2vw, 15px); color: #FFD700; margin-bottom: clamp(15px, 2.5vw, 25px);">
+                — Catechism of the Catholic Church, 409
+            </div>
+            <div class="intro-text">
+                "The struggle against our inclinations toward evil is not easy; every man experiences it within himself. As a result, the entire life of man is a combat against the powers of darkness."
+            </div>
+            <div class="intro-quote">
+                ✝ IT'S UP TO YOU TO FIGHT FOR WHAT'S GOOD IN THE WORLD ✝
+            </div>
+            <button class="start-btn" onclick="startGame()">BEGIN YOUR JOURNEY</button>
+        </div>
+    </div>
+
+    <div id="gameContainer">
+        <div id="battleField">
+            <div class="party-side">
+                <div class="character" id="hero">
+                    <div class="hero-sprite">
+                        <div class="sprite sprite-guardian"></div>
+                    </div>
+                    <div class="character-name">GUARDIAN ANGEL</div>
+                    <div class="hp-bar-container">
+                        <div class="hp-bar" style="width: 100%"></div>
+                        <div class="hp-text">777/777</div>
+                    </div>
+                </div>
+                <div class="character" id="companion">
+                    <div class="hero-sprite">
+                        <div class="sprite sprite-angel"></div>
+                    </div>
+                    <div class="character-name">ST MICHAEL</div>
+                    <div class="hp-bar-container">
+                        <div class="hp-bar" style="width: 100%"></div>
+                        <div class="hp-text">900/900</div>
+                    </div>
+                </div>
+            </div>
+            <div class="enemy-side" id="enemyContainer">
+                <div class="sin-name" id="sinName">PRIDE</div>
+                <div class="character enemy" id="currentEnemy">
+                    <div class="enemy-sprite">
+                        <div class="sprite sprite-enemy" id="enemySprite">😈</div>
+                    </div>
+                    <div class="hp-bar-container">
+                        <div class="hp-bar" style="width: 100%"></div>
+                        <div class="hp-text">100/100</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="audioControls">
+            <button class="audio-btn" id="muteBtn" onclick="toggleMute()">🔊</button>
+        </div>
+        <div id="menuContainer">
+            <div id="battleLog">
+                <div class="log-entry log-system">⚔️ The battle against sin begins! ⚔️</div>
+            </div>
+            <div id="actionMenu">
+                <div class="menu-section">
+                    <div class="menu-title">▶ ACTIONS</div>
+                    <div class="menu-buttons">
+                        <button class="menu-btn" onclick="selectAction('attack')">⚔️ STRIKE</button>
+                        <button class="menu-btn prayer" onclick="selectAction('prayer')">🙏 PRAYER</button>
+                    </div>
+                </div>
+                <div class="menu-section">
+                    <div class="menu-title">CURRENT SIN: <span id="currentSinDisplay">PRIDE</span></div>
+                    <div style="font-size: clamp(10px, 1.8vw, 12px); color: #ccc;">Defeat all Seven Deadly Sins</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="prayerSelection">
+        <div class="prayer-modal">
+            <div class="prayer-modal-title">✝️ SELECT YOUR PRAYER ✝️</div>
+            <div class="prayer-options" id="prayerOptions"></div>
+        </div>
+    </div>
+    
+    <div id="prayerTextDisplay">
+        <div class="prayer-text-title" id="prayerTextTitle"></div>
+        <div class="prayer-text-content" id="prayerTextContent"></div>
+        <button class="close-prayer-text" onclick="closePrayerText()">AMEN</button>
+    </div>
+
+    <div id="saintModal">
+        <div class="saint-content">
+            <div class="saint-image-container">
+                <div class="saint-halo"></div>
+                <div class="saint-image" id="saintImage">👼</div>
+            </div>
+            <div class="saint-title" id="saintName">Saint Name</div>
+            <div class="saint-virtue" id="saintVirtue">Patron of Virtue</div>
+            <div class="saint-quote" id="saintQuote"></div>
+            <div class="saint-prayer" id="saintPrayer">Saint Name, pray for us!</div>
+            <button class="continue-btn" onclick="closeSaintModal()">CONTINUE TO NEXT BATTLE</button>
+        </div>
+    </div>
+
+    <div id="passageOverlay">
+        <div class="passage-content">
+            <div class="passage-title" id="passageTitle">Victory!</div>
+            <div class="passage-text" id="passageText"></div>
+            <div class="passage-reference" id="passageReference"></div>
+            <button class="continue-btn" onclick="closePassage()">MEET THE SAINT</button>
+        </div>
+    </div>
+
+    <div id="gardenModal">
+        <div class="garden-background"></div>
+        <div class="garden-flowers" id="gardenFlowers"></div>
+        <div class="paradise-sun"></div>
+        <div class="garden-content">
+            <div class="garden-title">🌟 ENTER PARADISE 🌟</div>
+            <div class="jesus-image">✝️</div>
+            <div class="garden-text">
+                You have conquered a life of great and grave sin by defeating the Seven Deadly Sins through prayer, the Grace given to you by God, faith, and virtue. Now, Jesus Christ Himself invites you to enter the Garden of Eden, where the faithful find eternal peace and communion with God.
+            </div>
+            <div class="garden-verse">
+                "Come to me, all you who labor and are burdened, and I will give you rest." — Matthew 11:28
+            </div>
+            <button class="enter-garden-btn" onclick="enterParadise()">ENTER THE GARDEN</button>
+        </div>
+    </div>
+
+    <div id="paradiseScene">
+        <div class="paradise-sun"></div>
+        <div class="paradise-content">
+            <div class="paradise-title">🌺 WELCOME TO PARADISE 🌺</div>
+            <div class="paradise-message">
+                You walk with Jesus Christ our lord and savior through the Garden of Eden after a life long battle with temptations. "How narrow is the gate and strict the way that leads to life, and few are those who find it!" -Matthew 7:14. The air is filled with the fragrance of eternal flowers, and divine light surrounds you. Jesus Christ stands before you with open arms, welcoming you home.
+            </div>
+            <div class="jesus-image">🙏</div>
+            <div class="paradise-blessing">
+                "Well done, good and faithful servant, you have been faithful over a few things, I will make you ruler over many things. Enter into the joy of your lord"<br>— Matthew 25:23
+            </div>
+            <div class="paradise-message">
+                In this sacred place, free from sin and suffering, you find eternal rest in the presence of God. Your resistance against sin has caused the devil to flee from you so that you may through Jesus Christ you have received his grace to attain perfection and embody each virtue which allowed you to enter Paradise. 
+            </div>
+            <button class="continue-btn" style="margin-top: clamp(25px, 4vw, 40px);" onclick="showCredits()">VIEW CREDITS</button>
+        </div>
+    </div>
+
+    <div id="creditsScreen">
+        <div class="credits-content">
+            <div class="credits-title">All Made Saints Through the Grace of<br>Jesus Christ (God the Son)</div>
+            
+            <div class="credits-section">
+                <div class="credits-subtitle">⛪ THE SAINTS ⛪</div>
+                <div class="saint-list">
+                    🕊️ St. Francis of Assisi<br>
+                    📖 St. Thomas Aquinas<br>
+                    ⛪ St. John Vianney<br>
+                    🌹 St. Thérèse of Lisieux<br>
+                    🎁 St. Nicholas of Myra<br>
+                    ✝️ St. Catherine of Siena<br>
+                    🤍 St. Maria Goretti<br>
+                    🪽 St. Vincent Ferrer
+                </div>
+            </div>
+            
+            <div class="credits-section">
+                <div class="credits-subtitle">✝ 🫓 THE WORD OF GOD 🫓 ✝</div>
+                <div class="credits-text">
+                    "Whosoever eateth my flesh, and drinketh my blood, hath eternal life; and I will raise him up at the last day. For my flesh is meat indeed, and my blood is drink indeed. He that eateth my flesh, and drinketh my blood, dwelleth in me, and I in him. 
+                    As the living Father hath sent me, and I live by the Father: so he that eateth me, even he shall live by me. This is that bread which came down from heaven: not as your fathers did eat manna, and are dead: he that eateth of this bread shall live for ever."
+                </div>
+                <div class="passage-reference">— John 6:51-58</div>
+            </div>
+            
+            <div class="credits-section">
+                <div class="credits-subtitle">THE VIRTUES</div>
+                <div class="credits-text">
+                    "Human virtues are firm attitudes, stable dispositions, habitual perfections of intellect and will that govern our actions, order our passions, and guide our conduct according to reason and faith. They make possible ease, self-mastery, and joy in leading a morally good life."
+                </div>
+                <div class="passage-reference">— CCC 1804</div>
+            </div>
+            
+            <div class="credits-section">
+                <div class="credits-subtitle">THE CALL TO HOLINESS</div>
+                <div class="credits-text">
+                    "All Christians in any state or walk of life are called to the fullness of Christian life and to the perfection of charity. All are called to holiness: 'Be perfect, as your heavenly Father is perfect.'"
+                </div>
+                <div class="passage-reference">— CCC 2013</div>
+            </div>
+            
+            <div style="margin-top: clamp(30px, 5vw, 50px);">
+                <button class="continue-btn" onclick="location.reload()">PLAY AGAIN</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Audio System
+        let audioContext, mainMelodyGain, victoryMelodyGain, isMuted = false;
+        
+        function initAudio() {
+            try {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                mainMelodyGain = audioContext.createGain();
+                mainMelodyGain.connect(audioContext.destination);
+                mainMelodyGain.gain.value = 0.12;
+                victoryMelodyGain = audioContext.createGain();
+                victoryMelodyGain.connect(audioContext.destination);
+                victoryMelodyGain.gain.value = 0.15;
+            } catch (e) {
+                console.log('Audio not supported');
+            }
+        }
+        
+        function playPianoNote(frequency, startTime, duration, gainNode, velocity) {
+            if (!audioContext) return;
+            try {
+                const fundamental = audioContext.createOscillator();
+                const harmonic2 = audioContext.createOscillator();
+                const harmonic3 = audioContext.createOscillator();
+                const noteGain = audioContext.createGain();
+                const harm2Gain = audioContext.createGain();
+                const harm3Gain = audioContext.createGain();
+                
+                fundamental.type = 'sine';
+                fundamental.frequency.value = frequency;
+                harmonic2.type = 'sine';
+                harmonic2.frequency.value = frequency * 2;
+                harmonic3.type = 'sine';
+                harmonic3.frequency.value = frequency * 3;
+                
+                const maxVol = (velocity || 0.8) * 0.3;
+                noteGain.gain.setValueAtTime(0, startTime);
+                noteGain.gain.linearRampToValueAtTime(maxVol, startTime + 0.01);
+                noteGain.gain.exponentialRampToValueAtTime(maxVol * 0.7, startTime + 0.1);
+                noteGain.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
+                
+                harm2Gain.gain.value = 0.3;
+                harm3Gain.gain.value = 0.15;
+                
+                fundamental.connect(noteGain);
+                harmonic2.connect(harm2Gain);
+                harmonic3.connect(harm3Gain);
+                noteGain.connect(gainNode);
+                harm2Gain.connect(gainNode);
+                harm3Gain.connect(gainNode);
+                
+                fundamental.start(startTime);
+                harmonic2.start(startTime);
+                harmonic3.start(startTime);
+                fundamental.stop(startTime + duration);
+                harmonic2.stop(startTime + duration);
+                harmonic3.stop(startTime + duration);
+            } catch (e) {
+                console.log('Note playback error');
+            }
+        }
+        
+        function playAveMaria() {
+            if (!audioContext || isMuted) return;
+            try {
+                const now = audioContext.currentTime;
+                const beat = 0.5;
+                const melody = [
+                    { note: 'G4', duration: 1.5 }, { note: 'C5', duration: 0.5 }, { note: 'C5', duration: 1 },
+                    { note: 'D5', duration: 0.5 }, { note: 'C5', duration: 0.5 }, { note: 'B4', duration: 1 },
+                    { note: 'A4', duration: 1 }, { note: 'G4', duration: 2 }
+                ];
+                const noteFrequencies = {
+                    'G4': 392.00, 'A4': 440.00, 'B4': 493.88,
+                    'C5': 523.25, 'D5': 587.33, 'E5': 659.25, 'F5': 698.46
+                };
+                let time = now + 0.1;
+                melody.forEach(({ note, duration }) => {
+                    playPianoNote(noteFrequencies[note], time, duration * beat, mainMelodyGain, 0.8);
+                    time += duration * beat;
+                });
+                setTimeout(() => playAveMaria(), (time - now) * 1000 + 1000);
+            } catch (e) {}
+        }
+        
+        function playChristBeOurLight() {
+            if (!audioContext || isMuted) return;
+            try {
+                const now = audioContext.currentTime;
+                const beat = 0.45;
+                const melody = [
+                    { note: 'G4', duration: 1 }, { note: 'C5', duration: 2 }, { note: 'D5', duration: 1 }
+                ];
+                const noteFrequencies = {
+                    'G4': 392.00, 'C5': 523.25, 'D5': 587.33
+                };
+                let time = now + 0.1;
+                melody.forEach(({ note, duration }) => {
+                    playPianoNote(noteFrequencies[note], time, duration * beat, victoryMelodyGain, 0.9);
+                    time += duration * beat;
+                });
+                setTimeout(() => playChristBeOurLight(), (time - now) * 1000 + 1500);
+            } catch (e) {}
+        }
+        
+        function toggleMute() {
+            isMuted = !isMuted;
+            document.getElementById('muteBtn').textContent = isMuted ? '🔇' : '🔊';
+            if (mainMelodyGain) mainMelodyGain.gain.value = isMuted ? 0 : 0.12;
+            if (victoryMelodyGain) victoryMelodyGain.gain.value = isMuted ? 0 : 0.15;
+        }
+        
+        // Visual Effects
+        function createDivineLight(targetElement) {
+            try {
+                const light = document.createElement('div');
+                light.className = 'divine-light';
+                const rect = targetElement.getBoundingClientRect();
+                light.style.left = (rect.left + rect.width / 2) + 'px';
+                document.body.appendChild(light);
+                setTimeout(() => { if (light.parentNode) light.remove(); }, 2000);
+            } catch (e) {}
+        }
+        
+        function createParticles(targetElement, count) {
+            try {
+                const rect = targetElement.getBoundingClientRect();
+                const centerX = rect.left + rect.width / 2;
+                const centerY = rect.top + rect.height / 2;
+                for (let i = 0; i < (count || 20); i++) {
+                    const particle = document.createElement('div');
+                    particle.className = 'particle';
+                    const angle = (Math.PI * 2 * i) / count;
+                    const velocity = 2 + Math.random() * 2;
+                    const tx = Math.cos(angle) * velocity * 50;
+                    const ty = Math.sin(angle) * velocity * 50;
+                    particle.style.left = centerX + 'px';
+                    particle.style.top = centerY + 'px';
+                    particle.style.setProperty('--tx', tx + 'px');
+                    particle.style.setProperty('--ty', ty + 'px');
+                    particle.style.animationDelay = (i * 0.02) + 's';
+                    document.body.appendChild(particle);
+                    setTimeout(() => { if (particle.parentNode) particle.remove(); }, 3000);
+                }
+            } catch (e) {}
+        }
+        
+        function createVictorySparkles(targetElement, count) {
+            try {
+                const rect = targetElement.getBoundingClientRect();
+                const centerX = rect.left + rect.width / 2;
+                const centerY = rect.top + rect.height / 2;
+                for (let i = 0; i < (count || 50); i++) {
+                    setTimeout(() => {
+                        const sparkle = document.createElement('div');
+                        sparkle.className = 'victory-sparkle';
+                        const angle = Math.random() * Math.PI * 2;
+                        const distance = Math.random() * 300;
+                        const tx = Math.cos(angle) * distance;
+                        const ty = Math.sin(angle) * distance;
+                        sparkle.style.left = centerX + 'px';
+                        sparkle.style.top = centerY + 'px';
+                        sparkle.style.setProperty('--tx', tx + 'px');
+                        sparkle.style.setProperty('--ty', ty + 'px');
+                        document.body.appendChild(sparkle);
+                        setTimeout(() => { if (sparkle.parentNode) sparkle.remove(); }, 1500);
+                    }, i * 30);
+                }
+            } catch (e) {}
+        }
+        
+        function createSlashEffect(targetElement) {
+            try {
+                const rect = targetElement.getBoundingClientRect();
+                const slash = document.createElement('div');
+                slash.className = 'slash-effect';
+                slash.textContent = '⚔️';
+                slash.style.left = rect.left + 'px';
+                slash.style.top = (rect.top + rect.height / 2) + 'px';
+                document.body.appendChild(slash);
+                setTimeout(() => { if (slash.parentNode) slash.remove(); }, 600);
+            } catch (e) {}
+        }
+        
+        // Game State
+        const game = {
+            currentSinIndex: 0,
+            currentTurn: 'player',
+            heroes: [
+                { id: 'hero', name: 'GUARDIAN ANGEL', hp: 777, maxHP: 777, attack: 25 },
+                { id: 'companion', name: 'ST MICHAEL', hp: 900, maxHP: 900, attack: 20 }
+            ],
+            currentHeroIndex: 0,
+            sins: [
+                {
+                    name: 'PRIDE', emoji: '😈', hp: 100, maxHP: 100, attack: 20,
+                    passage: {
+                        title: 'On Pride',
+                        text: 'Pride is inordinate self-love which causes one to consider oneself superior to others and to hold others in contempt. It makes one refuse submission to God and even results in a person considering himself a god. Pride was the sin of Satan and our first parents.',
+                        reference: 'CCC 1866, 2094'
+                    },
+                    saint: {
+                        name: 'St. Francis of Assisi',
+                        emoji: '🕊️',
+                        virtue: 'Patron of Humility',
+                        quote: 'Where there is charity and wisdom, there is neither fear nor ignorance. Where there is patience and humility, there is neither anger nor vexation.',
+                        prayer: 'St. Francis of Assisi, pray for us!'
+                    }
+                },
+                {
+                    name: 'ENVY', emoji: '👿', hp: 100, maxHP: 100, attack: 18,
+                    passage: {
+                        title: 'On Envy',
+                        text: 'Envy is sadness at the sight of another\'s goods and the immoderate desire to acquire them for oneself, even unjustly. When it wishes grave harm to a neighbor it is a mortal sin.',
+                        reference: 'CCC 2539, 2540'
+                    },
+                    saint: {
+                        name: 'St. Thomas Aquinas',
+                        emoji: '📖',
+                        virtue: 'Patron of Kindness and Charity',
+                        quote: 'Charity is the form, mover, mother and root of all the virtues. The soul in charity moves all the other virtues to action.',
+                        prayer: 'St. Thomas Aquinas, pray for us!'
+                    }
+                },
+                {
+                    name: 'WRATH', emoji: '😡', hp: 110, maxHP: 110, attack: 25,
+                    passage: {
+                        title: 'On Wrath',
+                        text: 'Anger is a desire for revenge. To desire vengeance in order to do evil to someone who should be punished is illicit. If anger reaches the point of a deliberate desire to kill or seriously wound a neighbor, it is gravely against charity.',
+                        reference: 'CCC 2302'
+                    },
+                    saint: {
+                        name: 'St. John Vianney',
+                        emoji: '⛪',
+                        virtue: 'Patron of Patience',
+                        quote: 'Private prayer is like straw scattered here and there: If you set it on fire it makes a lot of little flames. But gather these straws into a bundle and light them, and you get a mighty fire.',
+                        prayer: 'St. John Vianney, pray for us!'
+                    }
+                },
+                {
+                    name: 'SLOTH', emoji: '😴', hp: 90, maxHP: 90, attack: 15,
+                    passage: {
+                        title: 'On Sloth',
+                        text: 'Acedia or spiritual sloth goes so far as to refuse the joy that comes from God and to be repelled by divine goodness. Sloth is a culpable lack of physical or spiritual effort.',
+                        reference: 'CCC 2094, 2733'
+                    },
+                    saint: {
+                        name: 'St. Thérèse of Lisieux',
+                        emoji: '🌹',
+                        virtue: 'Patron of Diligence',
+                        quote: 'Remember that nothing is small in the eyes of God. Do all that you do with love. Our Lord needs from us neither great deeds nor profound thoughts.',
+                        prayer: 'St. Thérèse of Lisieux, pray for us!'
+                    }
+                },
+                {
+                    name: 'GREED', emoji: '💰', hp: 100, maxHP: 100, attack: 22,
+                    passage: {
+                        title: 'On Greed',
+                        text: 'Greed is a disordered desire for or inordinate attachment to material possessions and money. It is forbidden by the tenth commandment. Greed is idolatry in that it makes money and possessions an ultimate end.',
+                        reference: 'CCC 2536, 2551'
+                    },
+                    saint: {
+                        name: 'St. Nicholas of Myra',
+                        emoji: '🎁',
+                        virtue: 'Patron of Generosity',
+                        quote: 'The giver of every good and perfect gift has called upon us to mimic His giving, by grace, through faith. In Christ we have been given every spiritual gift and blessing.',
+                        prayer: 'St. Nicholas of Myra, pray for us!'
+                    }
+                },
+                {
+                    name: 'GLUTTONY', emoji: '🍔', hp: 95, maxHP: 95, attack: 18,
+                    passage: {
+                        title: 'On Gluttony',
+                        text: 'The virtue of temperance disposes us to avoid every kind of excess: the abuse of food, alcohol, tobacco, or medicine. Gluttony represents an inordinate desire to consume more than that which one requires.',
+                        reference: 'CCC 2290, 1809'
+                    },
+                    saint: {
+                        name: 'St. Catherine of Siena',
+                        emoji: '✝️',
+                        virtue: 'Patron of Temperance',
+                        quote: 'We must not wish anything other than what happens from moment to moment, all the while, however, exercising ourselves in goodness. Be who God meant you to be and you will set the world on fire.',
+                        prayer: 'St. Catherine of Siena, pray for us!'
+                    }
+                },
+                {
+                    name: 'LUST', emoji: '💋', hp: 100, maxHP: 100, attack: 20,
+                    passage: {
+                        title: 'On Lust',
+                        text: 'Lust is disordered desire for or inordinate enjoyment of sexual pleasure. Sexual pleasure is morally disordered when sought for itself, isolated from its procreative and unitive purposes.',
+                        reference: 'CCC 2351, 1809'
+                    },
+                    saint: {
+                        name: 'St. Maria Goretti',
+                        emoji: '🤍',
+                        virtue: 'Patron of Chastity and Purity',
+                        quote: 'Purity is a pearl so precious that those who possess it become like the angels of God in heaven. I forgive my murderer with all my heart, and I want him to be with me in Paradise.',
+                        prayer: 'St. Maria Goretti, pray for us!'
+                    }
+                }
+            ],
+            prayers: [
+                { 
+                    name: 'OUR FATHER', icon: '✝️', damage: 40,
+                    text: 'Our Father, who art in heaven, hallowed be thy name; thy kingdom come; thy will be done on earth as it is in heaven. Give us this day our daily bread; and forgive us our trespasses as we forgive those who trespass against us; and lead us not into temptation, but deliver us from evil. Amen.',
+                    used: false
+                },
+                { 
+                    name: 'HAIL MARY', icon: '🌹', damage: 35,
+                    text: 'Hail Mary, full of grace, the Lord is with thee; blessed art thou among women, and blessed is the fruit of thy womb, Jesus. Holy Mary, Mother of God, pray for us sinners, now and at the hour of our death. Amen.',
+                    used: false
+                },
+                { 
+                    name: 'GLORY BE', icon: '✨', damage: 30,
+                    text: 'Glory be to the Father, and to the Son, and to the Holy Spirit. As it was in the beginning, is now, and ever shall be, world without end. Amen.',
+                    used: false
+                },
+                { 
+                    name: 'JESUS PRAYER', icon: '🙏', damage: 45,
+                    text: 'Lord Jesus Christ, Son of God, have mercy on me, a sinner.',
+                    used: false
+                }
+            ],
+            waitingForAction: true
+        };
+
+        function startGame() {
+            try {
+                document.getElementById('introScreen').classList.add('hidden');
+                initAudio();
+                playAveMaria();
+                loadCurrentSin();
+            } catch (e) {
+                console.error('Start game error:', e);
+            }
+        }
+
+        function loadCurrentSin() {
+            try {
+                const sin = game.sins[game.currentSinIndex];
+                document.getElementById('sinName').textContent = sin.name;
+                document.getElementById('currentSinDisplay').textContent = sin.name;
+                document.getElementById('enemySprite').textContent = sin.emoji;
+                updateEnemyHealthBar();
+                addBattleLog('You face ' + sin.name + '! May God grant you strength!', 'log-system');
+            } catch (e) {
+                console.error('Load sin error:', e);
+            }
+        }
+
+        function selectAction(action) {
+            if (!game.waitingForAction) return;
+            try {
+                game.waitingForAction = false;
+                const currentHero = game.heroes[game.currentHeroIndex];
+                if (action === 'attack') {
+                    executeAttack(currentHero);
+                } else if (action === 'prayer') {
+                    showPrayerMenu();
+                }
+            } catch (e) {
+                console.error('Select action error:', e);
+                game.waitingForAction = true;
+            }
+        }
+
+        function showPrayerMenu() {
+            try {
+                game.waitingForAction = true;
+                const modal = document.getElementById('prayerSelection');
+                const optionsContainer = document.getElementById('prayerOptions');
+                optionsContainer.innerHTML = '';
+                game.prayers.forEach((prayer, index) => {
+                    const option = document.createElement('div');
+                    option.className = 'prayer-option';
+                    option.innerHTML = '<div class="prayer-icon">' + prayer.icon + '</div>' +
+                        '<div class="prayer-name">' + prayer.name + '</div>' +
+                        '<div class="prayer-damage">Holy Damage: ' + prayer.damage + '</div>';
+                    option.onclick = function() { selectPrayer(index); };
+                    optionsContainer.appendChild(option);
+                });
+                modal.classList.add('active');
+            } catch (e) {
+                console.error('Show prayer menu error:', e);
+            }
+        }
+        
+        function selectPrayer(prayerIndex) {
+            try {
+                const prayer = game.prayers[prayerIndex];
+                document.getElementById('prayerSelection').classList.remove('active');
+                game.waitingForAction = false;
+                if (!prayer.used) {
+                    showPrayerText(prayer);
+                    prayer.used = true;
+                }
+                executePrayer(game.heroes[game.currentHeroIndex], prayer);
+            } catch (e) {
+                console.error('Select prayer error:', e);
+            }
+        }
+        
+        function showPrayerText(prayer) {
+            try {
+                document.getElementById('prayerTextTitle').textContent = prayer.name;
+                document.getElementById('prayerTextContent').textContent = prayer.text;
+                document.getElementById('prayerTextDisplay').classList.add('active');
+            } catch (e) {}
+        }
+        
+        function closePrayerText() {
+            try {
+                document.getElementById('prayerTextDisplay').classList.remove('active');
+            } catch (e) {}
+        }
+
+        function executeAttack(hero) {
+            try {
+                const sin = game.sins[game.currentSinIndex];
+                const damage = Math.floor(hero.attack + Math.random() * 10);
+                const heroEl = document.getElementById(hero.id);
+                heroEl.classList.add('attacking');
+                setTimeout(function() {
+                    heroEl.classList.remove('attacking');
+                    const enemyEl = document.getElementById('currentEnemy');
+                    createSlashEffect(enemyEl);
+                    createParticles(enemyEl, 15);
+                    applyDamageToEnemy(damage);
+                    addBattleLog(hero.name + ' strikes ' + sin.name + ' for ' + damage + ' damage!', 'log-damage');
+                    checkBattleEnd();
+                }, 300);
+            } catch (e) {
+                console.error('Execute attack error:', e);
+            }
+        }
+
+        function executePrayer(hero, prayer) {
+            try {
+                const sin = game.sins[game.currentSinIndex];
+                const heroEl = document.getElementById(hero.id);
+                const enemyEl = document.getElementById('currentEnemy');
+                heroEl.classList.add('attacking');
+                createDivineLight(enemyEl);
+                const rect = enemyEl.getBoundingClientRect();
+                const centerX = rect.left + rect.width / 2;
+                const centerY = rect.top + rect.height / 2;
+                
+                if (prayer.name === 'OUR FATHER') {
+                    for (let i = 0; i < 3; i++) {
+                        setTimeout(function() {
+                            const cross = document.createElement('div');
+                            cross.className = 'prayer-effect-cross';
+                            cross.textContent = '✝️';
+                            cross.style.left = centerX + 'px';
+                            cross.style.top = centerY + 'px';
+                            document.body.appendChild(cross);
+                            setTimeout(function() { if (cross.parentNode) cross.remove(); }, 2000);
+                        }, i * 200);
+                    }
+                } else if (prayer.name === 'HAIL MARY') {
+                    for (let i = 0; i < 12; i++) {
+                        setTimeout(function() {
+                            const rose = document.createElement('div');
+                            rose.className = 'prayer-effect-rose';
+                            rose.textContent = '🌹';
+                            const angle = (i / 12) * Math.PI * 2;
+                            const distance = 150;
+                            rose.style.setProperty('--tx', Math.cos(angle) * distance + 'px');
+                            rose.style.setProperty('--ty', Math.sin(angle) * distance + 'px');
+                            rose.style.left = centerX + 'px';
+                            rose.style.top = centerY + 'px';
+                            document.body.appendChild(rose);
+                            setTimeout(function() { if (rose.parentNode) rose.remove(); }, 2000);
+                        }, i * 50);
+                    }
+                } else if (prayer.name === 'GLORY BE') {
+                    for (let i = 0; i < 40; i++) {
+                        setTimeout(function() {
+                            const glory = document.createElement('div');
+                            glory.className = 'prayer-effect-glory';
+                            const angle = Math.random() * Math.PI * 2;
+                            const distance = 100 + Math.random() * 150;
+                            glory.style.setProperty('--tx', Math.cos(angle) * distance + 'px');
+                            glory.style.setProperty('--ty', Math.sin(angle) * distance + 'px');
+                            glory.style.left = centerX + 'px';
+                            glory.style.top = centerY + 'px';
+                            document.body.appendChild(glory);
+                            setTimeout(function() { if (glory.parentNode) glory.remove(); }, 1500);
+                        }, i * 20);
+                    }
+                } else if (prayer.name === 'JESUS PRAYER') {
+                    for (let i = 0; i < 5; i++) {
+                        setTimeout(function() {
+                            const jesus = document.createElement('div');
+                            jesus.className = 'prayer-effect-jesus';
+                            jesus.textContent = '🙏';
+                            jesus.style.left = (centerX - 40 + i * 20) + 'px';
+                            jesus.style.top = (centerY + 50) + 'px';
+                            document.body.appendChild(jesus);
+                            setTimeout(function() { if (jesus.parentNode) jesus.remove(); }, 2500);
+                        }, i * 150);
+                    }
+                }
+                
+                const heroRect = heroEl.getBoundingClientRect();
+                const prayerAnim = document.createElement('div');
+                prayerAnim.className = 'prayer-animation';
+                prayerAnim.textContent = prayer.icon;
+                prayerAnim.style.left = heroRect.left + heroRect.width / 2 + 'px';
+                prayerAnim.style.top = heroRect.top + 'px';
+                document.body.appendChild(prayerAnim);
+                setTimeout(function() { if (prayerAnim.parentNode) prayerAnim.remove(); }, 1500);
+                createParticles(heroEl, 25);
+                
+                setTimeout(function() {
+                    heroEl.classList.remove('attacking');
+                    createParticles(enemyEl, 30);
+                    applyDamageToEnemy(prayer.damage);
+                    addBattleLog(hero.name + ' prays ' + prayer.name + '! ' + sin.name + ' takes ' + prayer.damage + ' holy damage!', 'log-prayer');
+                    checkBattleEnd();
+                }, 800);
+            } catch (e) {
+                console.error('Execute prayer error:', e);
+            }
+        }
+
+        function applyDamageToEnemy(damage) {
+            try {
+                const sin = game.sins[game.currentSinIndex];
+                sin.hp = Math.max(0, sin.hp - damage);
+                const enemyEl = document.getElementById('currentEnemy');
+                enemyEl.classList.add('damaged');
+                setTimeout(function() { enemyEl.classList.remove('damaged'); }, 500);
+                updateEnemyHealthBar();
+                showDamageNumber('currentEnemy', damage, false);
+            } catch (e) {}
+        }
+
+        function updateEnemyHealthBar() {
+            try {
+                const sin = game.sins[game.currentSinIndex];
+                const enemyEl = document.getElementById('currentEnemy');
+                const hpBar = enemyEl.querySelector('.hp-bar');
+                const hpText = enemyEl.querySelector('.hp-text');
+                const percent = (sin.hp / sin.maxHP) * 100;
+                hpBar.style.width = percent + '%';
+                hpText.textContent = Math.floor(sin.hp) + '/' + sin.maxHP;
+            } catch (e) {}
+        }
+
+        function updateHeroHealthBar(heroId) {
+            try {
+                const hero = game.heroes.find(function(h) { return h.id === heroId; });
+                const heroEl = document.getElementById(heroId);
+                const hpBar = heroEl.querySelector('.hp-bar');
+                const hpText = heroEl.querySelector('.hp-text');
+                const percent = (hero.hp / hero.maxHP) * 100;
+                hpBar.style.width = percent + '%';
+                hpText.textContent = Math.floor(hero.hp) + '/' + hero.maxHP;
+            } catch (e) {}
+        }
+
+        function showDamageNumber(targetId, amount, isHeal) {
+            try {
+                const targetEl = document.getElementById(targetId);
+                const rect = targetEl.getBoundingClientRect();
+                const damageNum = document.createElement('div');
+                damageNum.className = 'damage-number' + (isHeal ? ' heal-number' : '');
+                damageNum.textContent = (isHeal ? '+' : '-') + amount;
+                damageNum.style.left = rect.left + rect.width / 2 + 'px';
+                damageNum.style.top = rect.top + 'px';
+                document.body.appendChild(damageNum);
+                setTimeout(function() { if (damageNum.parentNode) damageNum.remove(); }, 1200);
+            } catch (e) {}
+        }
+
+        function checkBattleEnd() {
+            try {
+                const sin = game.sins[game.currentSinIndex];
+                if (sin.hp <= 0) {
+                    const enemyEl = document.getElementById('currentEnemy');
+                    createVictorySparkles(enemyEl, 60);
+                    addBattleLog(sin.name + ' has been vanquished!', 'log-system');
+                    showPassage(sin.passage);
+                    return;
+                }
+                setTimeout(function() { enemyTurn(); }, 1000);
+            } catch (e) {
+                console.error('Check battle end error:', e);
+            }
+        }
+
+        function enemyTurn() {
+            try {
+                const sin = game.sins[game.currentSinIndex];
+                const target = game.heroes[Math.floor(Math.random() * game.heroes.length)];
+                const damage = Math.floor(sin.attack + Math.random() * 8);
+                target.hp = Math.max(0, target.hp - damage);
+                const targetEl = document.getElementById(target.id);
+                targetEl.classList.add('damaged');
+                setTimeout(function() { targetEl.classList.remove('damaged'); }, 500);
+                updateHeroHealthBar(target.id);
+                showDamageNumber(target.id, damage, false);
+                addBattleLog(sin.name + ' attacks ' + target.name + ' for ' + damage + ' damage!', 'log-damage');
+                if (game.heroes.every(function(h) { return h.hp <= 0; })) {
+                    setTimeout(function() {
+                        alert('You have been defeated. But do not lose hope - try again!');
+                        location.reload();
+                    }, 1000);
+                    return;
+                }
+                game.currentHeroIndex = (game.currentHeroIndex + 1) % game.heroes.length;
+                game.waitingForAction = true;
+            } catch (e) {
+                console.error('Enemy turn error:', e);
+            }
+        }
+
+        function showPassage(passage) {
+            try {
+                document.getElementById('passageTitle').textContent = passage.title;
+                document.getElementById('passageText').textContent = passage.text;
+                document.getElementById('passageReference').textContent = passage.reference;
+                document.getElementById('passageOverlay').classList.add('active');
+            } catch (e) {}
+        }
+
+        function closePassage() {
+            try {
+                document.getElementById('passageOverlay').classList.remove('active');
+                const sin = game.sins[game.currentSinIndex];
+                showSaintModal(sin.saint);
+            } catch (e) {
+                console.error('Close passage error:', e);
+            }
+        }
+
+        function showSaintModal(saint) {
+            try {
+                document.getElementById('saintName').textContent = saint.name;
+                document.getElementById('saintImage').textContent = saint.emoji;
+                document.getElementById('saintVirtue').textContent = saint.virtue;
+                document.getElementById('saintQuote').textContent = saint.quote;
+                document.getElementById('saintPrayer').textContent = saint.prayer;
+                document.getElementById('saintModal').classList.add('active');
+            } catch (e) {}
+        }
+
+        function closeSaintModal() {
+            try {
+                document.getElementById('saintModal').classList.remove('active');
+                game.currentSinIndex++;
+                if (game.currentSinIndex >= game.sins.length) {
+                    showGardenOfEden();
+                } else {
+                    loadCurrentSin();
+                    game.waitingForAction = true;
+                }
+            } catch (e) {
+                console.error('Close saint modal error:', e);
+            }
+        }
+
+        function showGardenOfEden() {
+            try {
+                if (mainMelodyGain) {
+                    mainMelodyGain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 1);
+                }
+                setTimeout(function() { playChristBeOurLight(); }, 1000);
+                
+                const flowersContainer = document.getElementById('gardenFlowers');
+                const flowers = ['🌺', '🌸', '🌼', '🌻', '🌷', '🌹', '🏵️', '💐', '🌿', '🍀'];
+                for (let i = 0; i < 40; i++) {
+                    const flower = document.createElement('div');
+                    flower.className = 'flower';
+                    flower.textContent = flowers[Math.floor(Math.random() * flowers.length)];
+                    flower.style.left = Math.random() * 100 + '%';
+                    flower.style.bottom = Math.random() * 50 + '%';
+                    flower.style.animationDelay = Math.random() * 3 + 's';
+                    flower.style.animationDuration = (2 + Math.random() * 2) + 's';
+                    flowersContainer.appendChild(flower);
+                }
+                
+                document.getElementById('gardenModal').classList.add('active');
+            } catch (e) {
+                console.error('Show garden error:', e);
+            }
+        }
+
+        function enterParadise() {
+            try {
+                document.getElementById('gardenModal').classList.remove('active');
+                document.getElementById('paradiseScene').classList.add('active');
+            } catch (e) {}
+        }
+
+        function showCredits() {
+            try {
+                document.getElementById('paradiseScene').classList.remove('active');
+                document.getElementById('creditsScreen').classList.add('active');
+            } catch (e) {}
+        }
+
+        function addBattleLog(message, className) {
+            try {
+                const log = document.getElementById('battleLog');
+                const entry = document.createElement('div');
+                entry.className = 'log-entry ' + (className || '');
+                entry.textContent = message;
+                log.appendChild(entry);
+                log.scrollTop = log.scrollHeight;
+            } catch (e) {}
+        }
+
+        // Prevent pull-to-refresh
+        let lastTouchY = 0;
+        let preventPullToRefresh = false;
+
+        document.addEventListener('touchstart', function(e) {
+            if (e.touches.length !== 1) return;
+            lastTouchY = e.touches[0].clientY;
+            preventPullToRefresh = window.pageYOffset === 0;
+        }, { passive: false });
+
+        document.addEventListener('touchmove', function(e) {
+            const touchY = e.touches[0].clientY;
+            const touchYDelta = touchY - lastTouchY;
+            lastTouchY = touchY;
+            if (preventPullToRefresh && touchYDelta > 0) {
+                e.preventDefault();
+                return;
+            }
+            preventPullToRefresh = false;
+        }, { passive: false });
+    </script>
+</body>
+</html>
