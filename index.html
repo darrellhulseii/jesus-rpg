@@ -1,997 +1,1635 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Battle for Virtue - Complete Edition</title>
+    <title>Warriors of Faith: Battle Against Sin</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Crimson+Text:wght@400;600;700&family=Cinzel:wght@600;700&display=swap');
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
+        body { 
+            margin: 0; 
+            background: #1a1a2e; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            min-height: 100vh; 
+            font-family: 'Courier New', monospace; 
+            color: #eee; 
+            flex-direction: column;
+            padding: 20px;
         }
-        html, body {
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
+        canvas { 
+            image-rendering: pixelated; 
+            image-rendering: crisp-edges;
+            border: 3px solid #16213e; 
+            background: #0f0f0f; 
+            box-shadow: 0 0 20px rgba(0,0,0,0.8);
+        }
+        #info { 
+            margin-top: 15px; 
+            text-align: center; 
+            max-width: 600px;
+            background: #16213e;
+            padding: 15px;
+            border-radius: 5px;
+            line-height: 1.6;
+        }
+        #info strong { color: #f39c12; }
+        
+        /* Game Boy Style Controls */
+        #gameboy-controls {
             position: fixed;
+            bottom: 20px;
+            left: 0;
+            right: 0;
+            display: none;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 30px;
+            pointer-events: none;
+            z-index: 1000;
         }
-        body {
-            font-family: 'Crimson Text', serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #2d1b4e 100%);
-            color: #fff;
+        
+        #dpad-container {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            pointer-events: all;
+        }
+        
+        .dpad-btn {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background: #2c3e50;
+            border: 3px solid #1a252f;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ecf0f1;
+            font-size: 20px;
+            font-weight: bold;
+            user-select: none;
             touch-action: none;
+            cursor: pointer;
+            transition: all 0.05s;
         }
-        /* Responsive Container */
-        .responsive-container {
-            width: 100vw;
-            height: 100vh;
+        
+        .dpad-btn:active {
+            background: #34495e;
+            transform: scale(0.95);
+        }
+        
+        .dpad-btn.up { 
+            top: 0; 
+            left: 40px;
+            border-radius: 8px 8px 0 0;
+        }
+        .dpad-btn.down { 
+            bottom: 0; 
+            left: 40px;
+            border-radius: 0 0 8px 8px;
+        }
+        .dpad-btn.left { 
+            top: 40px; 
+            left: 0;
+            border-radius: 8px 0 0 8px;
+        }
+        .dpad-btn.right { 
+            top: 40px; 
+            right: 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .dpad-btn.center {
+            top: 40px;
+            left: 40px;
+            background: #1a252f;
+            cursor: default;
+        }
+        
+        #button-container {
             display: flex;
             flex-direction: column;
+            gap: 15px;
+            pointer-events: all;
         }
-        /* Enhanced Sprites */
-        .sprite {
-            position: relative;
-            width: min(10vw, 100px);
-            height: min(12vw, 120px);
+        
+        #ab-buttons {
+            display: flex;
+            gap: 15px;
+            align-items: center;
         }
-        .sprite-guardian::before {
-            content: '☃️';
-            font-size: clamp(50px, 8vw, 80px);
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            filter: drop-shadow(0 0 20px rgba(135, 206, 235, 0.9));
-            animation: snowmanGlow 3s ease-in-out infinite;
-        }
-        @keyframes snowmanGlow {
-            0%, 100% {
-                filter: drop-shadow(0 0 20px rgba(135, 206, 235, 0.9));
-                transform: translate(-50%, -50%) scale(1);
-            }
-            50% {
-                filter: drop-shadow(0 0 35px rgba(135, 206, 235, 1));
-                transform: translate(-50%, -50%) scale(1.05);
-            }
-        }
-        .sprite-angel::before {
-            content: '😇';
-            font-size: clamp(50px, 8vw, 80px);
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            filter: drop-shadow(0 0 25px rgba(255, 215, 0, 1));
-            animation: angelGlow 2.5s ease-in-out infinite;
-        }
-        @keyframes angelGlow {
-            0%, 100% {
-                filter: drop-shadow(0 0 25px rgba(255, 215, 0, 1));
-            }
-            50% {
-                filter: drop-shadow(0 0 45px rgba(255, 215, 0, 1)) drop-shadow(0 0 60px rgba(255, 255, 255, 0.5));
-            }
-        }
-        .sprite-angel::after {
-            content: '';
-            position: absolute;
-            top: -5%;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 70%;
-            height: 15%;
-            border: clamp(2px, 0.3vw, 3px) solid #FFD700;
+        
+        .game-btn {
+            width: 65px;
+            height: 65px;
+            background: #e74c3c;
+            border: 4px solid #c0392b;
             border-radius: 50%;
-            box-shadow: 0 0 30px #FFD700, inset 0 0 15px #FFD700;
-            animation: haloGlow 2s ease-in-out infinite;
-        }
-        @keyframes haloGlow {
-            0%, 100% {
-                box-shadow: 0 0 30px #FFD700, inset 0 0 15px #FFD700;
-                opacity: 0.8;
-            }
-            50% {
-                box-shadow: 0 0 50px #FFD700, inset 0 0 25px #FFD700;
-                opacity: 1;
-            }
-        }
-        .sprite-enemy {
-            font-size: clamp(60px, 10vw, 100px);
             display: flex;
             align-items: center;
             justify-content: center;
-            filter: drop-shadow(0 0 30px rgba(255, 0, 0, 1));
-            animation: enemyPulse 2s ease-in-out infinite;
-        }
-        @keyframes enemyPulse {
-            0%, 100% {
-                filter: drop-shadow(0 0 30px rgba(255, 0, 0, 1));
-                transform: scale(1);
-            }
-            50% {
-                filter: drop-shadow(0 0 50px rgba(255, 0, 0, 1));
-                transform: scale(1.08);
-            }
-        }
-        /* Saint Modal with Image */
-        #saintModal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.95);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 1700;
-            padding: clamp(15px, 3vw, 40px);
-        }
-        #saintModal.active {
-            display: flex;
-            animation: modalFadeIn 0.6s ease-out;
-        }
-        @keyframes modalFadeIn {
-            from { opacity: 0; transform: scale(0.95); }
-            to { opacity: 1; transform: scale(1); }
-        }
-        .saint-content {
-            max-width: min(95vw, 900px);
-            width: 100%;
-            background: linear-gradient(135deg, rgba(15, 12, 41, 0.98), rgba(48, 43, 99, 0.98));
-            padding: clamp(25px, 5vw, 50px);
-            border: clamp(3px, 0.5vw, 5px) solid #FFD700;
-            border-radius: clamp(15px, 2vw, 20px);
-            box-shadow: 0 0 70px rgba(255, 215, 0, 0.9);
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-        .saint-content::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255, 215, 0, 0.15) 0%, transparent 70%);
-            animation: saintGlow 6s ease-in-out infinite;
-            pointer-events: none;
-        }
-        @keyframes saintGlow {
-            0%, 100% { transform: rotate(0deg); }
-            50% { transform: rotate(180deg); }
-        }
-        .saint-image-container {
-            position: relative;
-            width: clamp(180px, 30vw, 300px);
-            height: clamp(180px, 30vw, 300px);
-            margin: 0 auto clamp(20px, 3vw, 30px);
-            border-radius: 50%;
-            border: clamp(4px, 0.6vw, 6px) solid #FFD700;
-            overflow: hidden;
-            box-shadow: 0 0 50px rgba(255, 215, 0, 0.8), inset 0 0 40px rgba(255, 215, 0, 0.3);
-            background: linear-gradient(135deg, #2c1810 0%, #1a0f0a 100%);
-            animation: saintImageFloat 4s ease-in-out infinite;
-        }
-        @keyframes saintImageFloat {
-            0%, 100% { transform: translateY(0) scale(1); }
-            50% { transform: translateY(-8px) scale(1.02); }
-        }
-        .saint-image {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            font-size: clamp(100px, 18vw, 180px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: radial-gradient(circle, rgba(255, 215, 0, 0.25) 0%, transparent 70%);
-        }
-        .saint-halo {
-            position: absolute;
-            top: -10%;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 80%;
-            height: 16%;
-            border: clamp(4px, 0.6vw, 6px) solid #FFD700;
-            border-radius: 50%;
-            box-shadow: 0 0 50px #FFD700, inset 0 0 30px #FFD700;
-            animation: haloFloat 3s ease-in-out infinite, haloPulse 2s ease-in-out infinite;
-        }
-        @keyframes haloFloat {
-            0%, 100% { transform: translateX(-50%) translateY(0); }
-            50% { transform: translateX(-50%) translateY(-10px); }
-        }
-        @keyframes haloPulse {
-            0%, 100% {
-                box-shadow: 0 0 50px #FFD700, inset 0 0 30px #FFD700;
-            }
-            50% {
-                box-shadow: 0 0 70px #FFD700, inset 0 0 50px #FFD700;
-            }
-        }
-        .saint-title {
-            font-family: 'Cinzel', serif;
-            font-size: clamp(22px, 4.5vw, 36px);
-            color: #FFD700;
-            margin-bottom: clamp(12px, 2vw, 20px);
-            text-shadow: 3px 3px 0 #000, 0 0 40px #FFD700;
-            position: relative;
-            z-index: 1;
-            animation: titleShimmer 3s ease-in-out infinite;
-        }
-        @keyframes titleShimmer {
-            0%, 100% { text-shadow: 3px 3px 0 #000, 0 0 40px #FFD700; }
-            50% { text-shadow: 3px 3px 0 #000, 0 0 60px #FFD700; }
-        }
-        .saint-virtue {
-            font-size: clamp(15px, 2.8vw, 20px);
-            color: #87CEEB;
-            margin-bottom: clamp(15px, 2.5vw, 25px);
-            font-style: italic;
-            position: relative;
-            z-index: 1;
-        }
-        .saint-quote {
-            font-size: clamp(16px, 3vw, 22px);
-            line-height: 1.9;
-            color: #f0f0f0;
-            margin-bottom: clamp(15px, 2.5vw, 25px);
-            text-align: left;
-            font-style: italic;
-            padding: clamp(20px, 3.5vw, 35px);
-            background: rgba(0, 0, 0, 0.6);
-            border-left: clamp(4px, 0.6vw, 6px) solid #FFD700;
-            border-right: clamp(4px, 0.6vw, 6px) solid #FFD700;
-            position: relative;
-            z-index: 1;
-            border-radius: clamp(10px, 1.5vw, 15px);
-        }
-        .saint-quote::before {
-            content: '"';
-            font-size: clamp(50px, 10vw, 80px);
-            color: #FFD700;
-            position: absolute;
-            left: clamp(8px, 1.2vw, 12px);
-            top: clamp(-15px, -2vw, -20px);
-            opacity: 0.6;
-            font-family: Georgia, serif;
-        }
-        .saint-quote::after {
-            content: '"';
-            font-size: clamp(50px, 10vw, 80px);
-            color: #FFD700;
-            position: absolute;
-            right: clamp(8px, 1.2vw, 12px);
-            bottom: clamp(-40px, -5vw, -50px);
-            opacity: 0.6;
-            font-family: Georgia, serif;
-        }
-        .saint-prayer {
-            font-family: 'Cinzel', serif;
-            font-size: clamp(20px, 4vw, 28px);
-            color: #FFD700;
-            margin: clamp(20px, 3.5vw, 35px) 0;
-            text-shadow: 2px 2px 0 #000, 0 0 20px #FFD700;
-            position: relative;
-            z-index: 1;
-            animation: prayerPulse 2s ease-in-out infinite;
-            font-weight: 600;
-        }
-        @keyframes prayerPulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
-        /* Large Touch-Friendly Continue Button */
-        .continue-btn {
-            padding: clamp(18px, 3vw, 28px) clamp(40px, 8vw, 80px);
-            background: linear-gradient(180deg, #27ae60 0%, #1e8449 100%);
-            border: clamp(4px, 0.6vw, 6px) solid #FFD700;
             color: #fff;
-            font-family: 'Cinzel', serif;
-            font-size: clamp(18px, 3.5vw, 24px);
+            font-size: 20px;
+            font-weight: bold;
+            user-select: none;
+            touch-action: none;
             cursor: pointer;
-            text-shadow: 2px 2px 0 #000;
-            box-shadow: 0 clamp(6px, 1vw, 10px) 0 #145a32;
-            border-radius: clamp(12px, 2vw, 18px);
-            font-weight: 700;
-            transition: all 0.2s;
-            animation: continueButtonPulse 2s ease-in-out infinite;
-            min-height: 60px;
-            min-width: 200px;
+            transition: all 0.05s;
+            box-shadow: 0 4px 0 #a93226;
         }
-        @keyframes continueButtonPulse {
-            0%, 100% {
-                box-shadow: 0 clamp(6px, 1vw, 10px) 0 #145a32, 0 0 20px rgba(39, 174, 96, 0.5);
-            }
-            50% {
-                box-shadow: 0 clamp(6px, 1vw, 10px) 0 #145a32, 0 0 40px rgba(39, 174, 96, 0.8);
-            }
-        }
-        .continue-btn:hover {
-            background: linear-gradient(180deg, #2ecc71 0%, #229954 100%);
-            transform: translateY(-4px);
-            box-shadow: 0 clamp(8px, 1.4vw, 14px) 0 #145a32;
-        }
-        .continue-btn:active {
+        
+        .game-btn:active {
+            background: #c0392b;
             transform: translateY(2px);
-            box-shadow: 0 clamp(3px, 0.5vw, 5px) 0 #145a32;
+            box-shadow: 0 2px 0 #a93226;
         }
-        /* Garden of Eden */
-        #gardenModal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, #1a4d2e 0%, #2d5f3f 50%, #4a7c59 100%);
-            display: none;
+        
+        .game-btn.b-btn {
+            background: #95a5a6;
+            border-color: #7f8c8d;
+            box-shadow: 0 4px 0 #6c7a7b;
+        }
+        
+        .game-btn.b-btn:active {
+            background: #7f8c8d;
+            box-shadow: 0 2px 0 #6c7a7b;
+        }
+        
+        .start-btn {
+            width: 70px;
+            height: 30px;
+            background: #34495e;
+            border: 3px solid #2c3e50;
+            border-radius: 15px;
+            display: flex;
             align-items: center;
             justify-content: center;
-            z-index: 1800;
-            padding: clamp(15px, 3vw, 40px);
-            overflow: hidden;
-        }
-        #gardenModal.active {
-            display: flex;
-            animation: gardenReveal 2s ease-out;
-        }
-        @keyframes gardenReveal {
-            from { opacity: 0; transform: scale(0.9); }
-            to { opacity: 1; transform: scale(1); }
-        }
-        .garden-background {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle at 20% 30%, rgba(255, 215, 0, 0.25) 0%, transparent 50%),
-            radial-gradient(circle at 80% 70%, rgba(135, 206, 235, 0.25) 0%, transparent 50%),
-            linear-gradient(180deg, #87CEEB 0%, #98D8C8 50%, #5D8B6B 100%);
-            animation: gardenBreeze 10s ease-in-out infinite;
-        }
-        @keyframes gardenBreeze {
-            0%, 100% { opacity: 0.8; }
-            50% { opacity: 1; }
-        }
-        .garden-flowers {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-        }
-        .flower {
-            position: absolute;
-            font-size: clamp(30px, 6vw, 50px);
-            animation: flowerSway 3s ease-in-out infinite;
-            filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.6));
-        }
-        @keyframes flowerSway {
-            0%, 100% { transform: rotate(-8deg) scale(1); }
-            50% { transform: rotate(8deg) scale(1.05); }
-        }
-        .paradise-sun {
-            position: absolute;
-            top: clamp(30px, 6vw, 60px);
-            right: clamp(40px, 10vw, 100px);
-            width: clamp(100px, 18vw, 200px);
-            height: clamp(100px, 18vw, 200px);
-            background: radial-gradient(circle, #FFD700 0%, #FFA500 100%);
-            border-radius: 50%;
-            box-shadow: 0 0 120px #FFD700;
-            animation: sunGlow 4s ease-in-out infinite;
-        }
-        @keyframes sunGlow {
-            0%, 100% {
-                box-shadow: 0 0 120px #FFD700;
-                transform: scale(1);
-            }
-            50% {
-                box-shadow: 0 0 180px #FFD700, 0 0 250px #FFA500;
-                transform: scale(1.05);
-            }
-        }
-        .garden-content {
-            max-width: min(95vw, 950px);
-            width: 100%;
-            text-align: center;
-            position: relative;
-            z-index: 10;
-            background: rgba(255, 255, 255, 0.96);
-            padding: clamp(35px, 6vw, 70px);
-            border-radius: clamp(25px, 3.5vw, 35px);
-            box-shadow: 0 0 100px rgba(255, 215, 0, 1);
-            border: clamp(5px, 0.8vw, 8px) solid #FFD700;
-            max-height: 85vh;
-            overflow-y: auto;
-        }
-        .garden-title {
-            font-family: 'Cinzel', serif;
-            font-size: clamp(32px, 7vw, 56px);
-            background: linear-gradient(135deg, #FFD700 0%, #FFA500 50%, #FFD700 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: clamp(20px, 3.5vw, 35px);
-            animation: titleShine 3s ease-in-out infinite;
-            font-weight: 700;
-        }
-        @keyframes titleShine {
-            0%, 100% { filter: brightness(1); }
-            50% { filter: brightness(1.4); }
-        }
-        .jesus-image {
-            font-size: clamp(80px, 15vw, 140px);
-            margin: clamp(20px, 3.5vw, 35px) 0;
-            filter: drop-shadow(0 0 40px rgba(255, 215, 0, 1));
-            animation: jesusGlow 2s ease-in-out infinite;
-            display: inline-block;
-        }
-        @keyframes jesusGlow {
-            0%, 100% {
-                transform: scale(1);
-                filter: drop-shadow(0 0 40px rgba(255, 215, 0, 1));
-            }
-            50% {
-                transform: scale(1.12);
-                filter: drop-shadow(0 0 70px rgba(255, 215, 0, 1));
-            }
-        }
-        .garden-text {
-            font-size: clamp(17px, 3.2vw, 24px);
-            line-height: 2;
-            color: #2c1810;
-            margin-bottom: clamp(18px, 3vw, 30px);
-            text-align: left;
-            font-style: italic;
-        }
-        .garden-verse {
-            font-size: clamp(16px, 3vw, 22px);
-            color: #8B4513;
-            margin: clamp(20px, 3.5vw, 35px) 0;
-            padding: clamp(18px, 3vw, 30px);
-            background: rgba(255, 215, 0, 0.25);
-            border-radius: clamp(15px, 2vw, 20px);
-            border: clamp(3px, 0.5vw, 5px) solid #FFD700;
-            font-weight: 600;
-            text-align: left;
-        }
-        .enter-garden-btn {
-            padding: clamp(20px, 3.5vw, 32px) clamp(50px, 10vw, 90px);
-            background: linear-gradient(180deg, #FFD700 0%, #FFA500 100%);
-            border: clamp(4px, 0.7vw, 7px) solid #8B6914;
-            color: #000;
-            font-family: 'Cinzel', serif;
-            font-size: clamp(18px, 3.5vw, 26px);
+            color: #ecf0f1;
+            font-size: 11px;
+            font-weight: bold;
+            user-select: none;
+            touch-action: none;
             cursor: pointer;
-            font-weight: 700;
-            text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.5);
-            box-shadow: 0 clamp(6px, 1.2vw, 12px) 0 #6B5410;
-            border-radius: clamp(15px, 2vw, 20px);
-            transition: all 0.3s;
-            text-transform: uppercase;
-            animation: buttonGlow 2s ease-in-out infinite;
-            min-height: 70px;
+            transition: all 0.05s;
+            margin: 0 auto;
         }
-        @keyframes buttonGlow {
-            0%, 100% {
-                box-shadow: 0 clamp(6px, 1.2vw, 12px) 0 #6B5410, 0 0 30px rgba(255, 215, 0, 0.6);
-            }
-            50% {
-                box-shadow: 0 clamp(6px, 1.2vw, 12px) 0 #6B5410, 0 0 50px rgba(255, 215, 0, 0.9);
-            }
+        
+        .start-btn:active {
+            background: #2c3e50;
+            transform: scale(0.95);
         }
-        .enter-garden-btn:hover {
-            background: linear-gradient(180deg, #FFEB3B 0%, #FFB300 100%);
-            transform: translateY(-5px);
-        }
-        .enter-garden-btn:active {
-            transform: translateY(3px);
-        }
-        /* Paradise Scene */
-        #paradiseScene {
+        
+        /* Quote overlay */
+        #quote-overlay {
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(180deg, #87CEEB 0%, #E0F6FF 50%, #90EE90 100%);
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.9);
             display: none;
             align-items: center;
             justify-content: center;
             z-index: 2000;
-            overflow: hidden;
-            padding: clamp(15px, 3vw, 40px);
+            padding: 20px;
         }
-        #paradiseScene.active {
-            display: flex;
-            animation: paradiseFade 3s ease-out;
-        }
-        @keyframes paradiseFade {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        .paradise-content {
-            text-align: center;
-            z-index: 10;
-            background: rgba(255, 255, 255, 0.92);
-            padding: clamp(40px, 7vw, 90px);
-            border-radius: clamp(30px, 4.5vw, 45px);
-            box-shadow: 0 0 120px rgba(255, 215, 0, 1);
-            border: clamp(6px, 1vw, 10px) solid #FFD700;
-            max-width: min(95vw, 1050px);
-            width: 100%;
-            max-height: 85vh;
+        
+        #quote-box {
+            background: linear-gradient(135deg, #2c3e50 0%, #1a252f 100%);
+            border: 3px solid #f39c12;
+            border-radius: 15px;
+            padding: 25px;
+            max-width: 90%;
+            max-height: 90vh;
             overflow-y: auto;
-        }
-        .paradise-title {
-            font-family: 'Cinzel', serif;
-            font-size: clamp(36px, 8vw, 64px);
-            background: linear-gradient(135deg, #FFD700 0%, #FFA500 50%, #FFD700 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: clamp(25px, 4.5vw, 45px);
-            animation: titleRainbow 3s ease-in-out infinite;
-            font-weight: 700;
-        }
-        @keyframes titleRainbow {
-            0%, 100% { filter: hue-rotate(0deg) brightness(1.3); }
-            50% { filter: hue-rotate(25deg) brightness(1.6); }
-        }
-        .paradise-message {
-            font-size: clamp(18px, 3.5vw, 26px);
-            line-height: 2.1;
-            color: #2c1810;
-            margin-bottom: clamp(25px, 4.5vw, 45px);
-            font-style: italic;
-            text-align: left;
-        }
-        .paradise-blessing {
-            font-family: 'Cinzel', serif;
-            font-size: clamp(20px, 4vw, 32px);
-            color: #8B4513;
-            margin: clamp(25px, 4.5vw, 45px) 0;
-            padding: clamp(22px, 3.5vw, 35px);
-            background: rgba(255, 215, 0, 0.35);
-            border-radius: clamp(18px, 2.5vw, 25px);
-            font-weight: 600;
-            text-align: left;
-        }
-
-        /* New Styles for Combat and Quests */
-        #combatModal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.95);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 1900;
-            padding: clamp(15px, 3vw, 40px);
-        }
-        #combatModal.active {
-            display: flex;
-        }
-        .combat-content {
-            max-width: min(95vw, 900px);
-            width: 100%;
-            background: linear-gradient(135deg, rgba(15, 12, 41, 0.98), rgba(48, 43, 99, 0.98));
-            padding: clamp(25px, 5vw, 50px);
-            border: clamp(3px, 0.5vw, 5px) solid #FFD700;
-            border-radius: clamp(15px, 2vw, 20px);
-            box-shadow: 0 0 70px rgba(255, 215, 0, 0.9);
             text-align: center;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
         }
-        .combat-arena {
-            display: flex;
-            justify-content: space-between;
+        
+        #quote-text {
+            font-size: 14px;
+            line-height: 1.5;
+            color: #ecf0f1;
+            margin-bottom: 15px;
+        }
+        
+        #quote-author {
+            font-size: 12px;
+            color: #f39c12;
+            font-weight: bold;
             margin-bottom: 20px;
         }
-        .player-side, .enemy-side {
-            width: 45%;
-        }
-        .combat-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-        }
-        .attack-btn {
-            padding: 10px 20px;
-            background: #ff4500;
-            color: #fff;
+        
+        #quote-continue {
+            background: #f39c12;
+            color: #1a252f;
             border: none;
+            padding: 10px 25px;
+            font-size: 14px;
+            font-weight: bold;
+            border-radius: 8px;
             cursor: pointer;
+            transition: all 0.2s;
         }
-        #questLog {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: rgba(0, 0, 0, 0.8);
-            padding: 10px;
-            border: 1px solid #ffd700;
-            display: none;
+        
+        #quote-continue:active {
+            background: #e67e22;
+            transform: scale(0.95);
         }
-        #questLog.active {
-            display: block;
-        }
-        /* Added Sprite Enhancements */
-        /* === SPRITE SHEET SYSTEM (added for higher quality) === */
-        .sprite-sheet {
-            width: 64px; height: 64px;
-            image-rendering: pixelated;
-            background-image: url('https://opengameart.org/sites/default/files/angel-sprite-sheet.png'); /* Example angel sprite sheet */
-            background-size: 256px 256px; /* 4 frames × 4 directions */
-            animation: spriteWalk 0.6s steps(4) infinite;
-        }
-        @keyframes spriteWalk { 0% {background-position:0 0} 25%{background-position:-64px 0} 50%{background-position:-128px 0} 75%{background-position:-192px 0} }
-
-        /* Player (Angel) */
-        .player-sprite { background-position: 0 0; animation: spriteWalk 0.8s steps(4) infinite; }
-        .enemy-sprite { background-position: 0 -64px; animation: enemyBob 1.2s infinite; }
-        @keyframes enemyBob { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
-
-        /* Saint victory sprites (64px) */
-        .saint-sprite { width:96px; height:96px; margin:20px auto; image-rendering:pixelated; }
-
-        /* In combat modal, replace .sprite-angel and .sprite-enemy classes with: */
-        .player-side { background: url('https://opengameart.org/sites/default/files/angel-sprite-sheet.png') no-repeat center; background-size:64px; height:100px; }
-        .enemy-side { background: url('https://opengameart.org/sites/default/files/7-deadly-sins-pixel-art.png') no-repeat center; background-size:64px; height:100px; }
-        /* Progress Bar */
-        #progress-bar {
-            position: absolute;
-            top: 50px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 80%;
-            background: #333;
-            border: 1px solid #ffd700;
-            height: 20px;
-        }
-        #progress-fill {
-            height: 100%;
-            background: #ffd700;
-            width: 0%;
-        }
-        /* Credits Section */
-        #credits {
-            padding: 20px;
-            text-align: center;
-            display: none;
-        }
-        #credits.active {
-            display: block;
+        
+        @media (max-width: 768px), (pointer: coarse) {
+            #gameboy-controls {
+                display: flex;
+            }
+            body {
+                padding: 10px 10px 180px 10px;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="responsive-container">
-        <!-- Existing Modals -->
-        <div id="saintModal">
-            <div class="saint-content">
-                <div class="saint-image-container">
-                    <div class="saint-image"></div>
-                    <div class="saint-halo"></div>
-                </div>
-                <h2 class="saint-title"></h2>
-                <p class="saint-virtue"></p>
-                <p class="saint-quote"></p>
-                <p class="saint-prayer">Saint, pray for us!</p>
-                <button class="continue-btn" onclick="document.getElementById('saintModal').classList.remove('active')">Continue</button>
+    <canvas id="game" width="512" height="384"></canvas>
+    <div id="info">
+        <strong>Controls:</strong> WASD/Arrows to move | <strong>Battle:</strong> ↑↓ select, Enter/A confirm, Esc/B back<br>
+        <strong>Start/I:</strong> Open inventory | Defeat the Seven Deadly Sins!
+    </div>
+    
+    <!-- Game Boy Controls -->
+    <div id="gameboy-controls">
+        <div id="dpad-container">
+            <div class="dpad-btn up" data-key="arrowup">▲</div>
+            <div class="dpad-btn down" data-key="arrowdown">▼</div>
+            <div class="dpad-btn left" data-key="arrowleft">◀</div>
+            <div class="dpad-btn right" data-key="arrowright">▶</div>
+            <div class="dpad-btn center"></div>
+        </div>
+        <div id="button-container">
+            <div id="ab-buttons">
+                <div class="game-btn b-btn" data-key="b">B</div>
+                <div class="game-btn" data-key="a">A</div>
             </div>
-        </div>
-        <div id="gardenModal">
-            <div class="garden-background"></div>
-            <div class="garden-flowers">
-                <!-- Add flower elements -->
-                <div class="flower" style="left:10%; top:20%;">🌸</div>
-                <div class="flower" style="left:30%; top:60%;">🌼</div>
-                <div class="flower" style="left:70%; top:40%;">🌺</div>
-            </div>
-            <div class="paradise-sun"></div>
-            <div class="garden-content">
-                <h1 class="garden-title">Garden of Eden</h1>
-                <div class="jesus-image">✝️</div>
-                <p class="garden-text">You have entered the Garden...</p>
-                <p class="garden-verse">"Come to me..." — Matthew 11:28</p>
-                <button class="enter-garden-btn" onclick="document.getElementById('gardenModal').classList.remove('active'); document.getElementById('paradiseScene').classList.add('active')">Enter</button>
-            </div>
-        </div>
-        <div id="paradiseScene">
-            <div class="paradise-content">
-                <h1 class="paradise-title">Welcome to Paradise</h1>
-                <p class="paradise-message">You walk with Jesus...</p>
-                <p class="paradise-blessing">"Well done..." — Matthew 25:23</p>
-                <button onclick="document.getElementById('paradiseScene').classList.remove('active'); document.getElementById('credits').classList.add('active')">View Credits</button>
-            </div>
-        </div>
-
-        <!-- New Combat Modal -->
-        <div id="combatModal">
-            <div class="combat-content">
-                <div class="combat-arena">
-                    <div class="player-side player-sprite">
-                        <div id="playerHp">HP: 100</div>
-                    </div>
-                    <div class="enemy-side enemy-sprite">
-                        <div id="enemyHp">HP: 100</div>
-                    </div>
-                </div>
-                <div class="combat-buttons">
-                    <button class="attack-btn" onclick="playerAttack()">Attack</button>
-                    <button class="attack-btn" onclick="playerHeal()">Heal</button>
-                    <button class="attack-btn" onclick="endCombat()">Run</button>
-                </div>
-                <div id="combatMessage"></div>
-            </div>
-        </div>
-
-        <!-- Quest Log -->
-        <div id="questLog">
-            <h3>Quests</h3>
-            <ul id="questList"></ul>
-        </div>
-
-        <!-- Progress Bar -->
-        <div id="progress-bar">
-            <div id="progress-fill"></div>
-        </div>
-
-        <!-- Main Game Area -->
-        <div id="mainGame">
-            <button onclick="toggleQuestLog()">Quest Log</button>
-            <button onclick="saveGame()">Save</button>
-            <button onclick="loadGame()">Load</button>
-            <button onclick="document.querySelectorAll('div[id$=\"Modal\"]').forEach(m => m.classList.remove('active'))">Return to World</button>
-        </div>
-
-        <!-- Credits Section incorporating provided content -->
-        <div id="credits">
-            <h1>Battle for Virtue - Complete Edition</h1>
-            <p>"Man is divided in himself. As a result, the whole life of men, both individual and social, shows itself to be a struggle, and a dramatic one, between good and evil, between light and darkness."</p>
-            <p>— Catechism of the Catholic Church, 409</p>
-            <p>"The struggle against our inclinations toward evil is not easy; every man experiences it within himself. As a result, the entire life of man is a combat against the powers of darkness."</p>
-            <p>✝ IT'S UP TO YOU TO FIGHT FOR WHAT'S GOOD IN THE WORLD ✝</p>
-            <h2>⛪ THE SAINTS ⛪</h2>
-            <ul>
-                <li>🕊️ St. Francis of Assisi</li>
-                <li>📖 St. Thomas Aquinas</li>
-                <li>⛪ St. John Vianney</li>
-                <li>🌹 St. Thérèse of Lisieux</li>
-                <li>🎁 St. Nicholas of Myra</li>
-                <li>✝️ St. Catherine of Siena</li>
-                <li>🤍 St. Maria Goretti</li>
-                <li>🪽 St. Vincent Ferrer</li>
-            </ul>
-            <h2>✝ 🫓 THE WORD OF GOD 🫓 ✝</h2>
-            <p>"Whosoever eateth my flesh, and drinketh my blood, hath eternal life; and I will raise him up at the last day. For my flesh is meat indeed, and my blood is drink indeed. He that eateth my flesh, and drinketh my blood, dwelleth in me, and I in him. As the living Father hath sent me, and I live by the Father: so he that eateth me, even he shall live by me. This is that bread which came down from heaven: not as your fathers did eat manna, and are dead: he that eateth of this bread shall live for ever."</p>
-            <p>— John 6:51-58</p>
-            <h2>THE VIRTUES</h2>
-            <p>"Human virtues are firm attitudes, stable dispositions, habitual perfections of intellect and will that govern our actions, order our passions, and guide our conduct according to reason and faith. They make possible ease, self-mastery, and joy in leading a morally good life."</p>
-            <p>— CCC 1804</p>
-            <h2>THE CALL TO HOLINESS</h2>
-            <p>"All Christians in any state or walk of life are called to the fullness of Christian life and to the perfection of charity. All are called to holiness: 'Be perfect, as your heavenly Father is perfect.'"</p>
-            <p>— CCC 2013</p>
-            <button onclick="location.reload()">Play Again</button>
+            <div class="start-btn" data-key="start">START</div>
         </div>
     </div>
-    <audio id="hit" src="https://freesound.org/data/previews/276/276951_5121236-lq.mp3"></audio>
-    <audio id="victory" src="https://freesound.org/data/previews/321/321552_5121236-lq.mp3"></audio>
+    
+    <!-- Quote Overlay -->
+    <div id="quote-overlay">
+        <div id="quote-box">
+            <div id="quote-text"></div>
+            <div id="quote-author"></div>
+            <button id="quote-continue">Continue Quest</button>
+        </div>
+    </div>
+    
     <script>
-        // Player Data
-        let player = {
-            hp: 100,
-            maxHp: 100,
-            virtues: [] // Collected virtues from quests
+        // ===== CONSTANTS =====
+        const canvas = document.getElementById('game');
+        const ctx = canvas.getContext('2d');
+        ctx.imageSmoothingEnabled = false;
+
+        const TILE_SIZE = 16;
+        const SCALE = 2;
+        const VIEW_WIDTH = canvas.width / SCALE;
+        const VIEW_HEIGHT = canvas.height / SCALE;
+        const MAP_WIDTH = 50;
+        const MAP_HEIGHT = 40;
+
+        // ===== GAME STATE =====
+        let gameState = 'title'; // 'title', 'explore', 'battle', 'inventory'
+        let hudMsg = '';
+        let hudMsgTimer = 0;
+        let dungeonLevel = 1;
+
+        // ===== BIBLE VERSES FOR TITLE SCREEN =====
+        const titleScreenVerses = [
+            {
+                text: "Death has been swallowed up in victory. Where, O death, is your victory? Where, O death, is your sting?",
+                reference: "1 Corinthians 15:54-55"
+            },
+            {
+                text: "For the wages of sin is death, but the gift of God is eternal life in Christ Jesus our Lord.",
+                reference: "Romans 6:23"
+            },
+            {
+                text: "He will wipe every tear from their eyes. There will be no more death or mourning or crying or pain.",
+                reference: "Revelation 21:4"
+            },
+            {
+                text: "The last enemy to be destroyed is death. For he has put everything under his feet.",
+                reference: "1 Corinthians 15:26-27"
+            },
+            {
+                text: "Since the children have flesh and blood, he too shared in their humanity so that by his death he might break the power of him who holds the power of death—that is, the devil.",
+                reference: "Hebrews 2:14"
+            }
+        ];
+        
+        let currentVerseIndex = 0;
+        let verseTimer = 0;
+        const VERSE_DISPLAY_TIME = 6;
+
+        // ===== SPRITE GENERATION =====
+        function createTileSprite(type) {
+            const c = document.createElement('canvas');
+            c.width = c.height = TILE_SIZE;
+            const cx = c.getContext('2d');
+            
+            if (type === 'floor') {
+                const shade = 40 + Math.random() * 20;
+                cx.fillStyle = `rgb(${shade}, ${shade}, ${shade + 5})`;
+                cx.fillRect(0, 0, TILE_SIZE, TILE_SIZE);
+                for (let i = 0; i < 8; i++) {
+                    cx.fillStyle = `rgba(${30 + Math.random() * 20}, ${30 + Math.random() * 20}, ${35 + Math.random() * 20}, 0.3)`;
+                    cx.fillRect(Math.random() * TILE_SIZE, Math.random() * TILE_SIZE, 2, 2);
+                }
+            } else if (type === 'wall') {
+                const baseColor = 60 + Math.random() * 15;
+                cx.fillStyle = `rgb(${baseColor}, ${baseColor - 5}, ${baseColor - 10})`;
+                cx.fillRect(0, 0, TILE_SIZE, TILE_SIZE);
+                cx.strokeStyle = `rgba(0, 0, 0, 0.4)`;
+                cx.lineWidth = 1;
+                cx.strokeRect(0, 0, TILE_SIZE, TILE_SIZE);
+            }
+            return c;
+        }
+
+        function createPlayerSprite() {
+            const c = document.createElement('canvas');
+            c.width = c.height = TILE_SIZE;
+            const cx = c.getContext('2d');
+            
+            cx.fillStyle = '#2c3e50';
+            cx.fillRect(5, 8, 6, 7);
+            cx.fillStyle = '#f0c291';
+            cx.fillRect(6, 4, 4, 4);
+            cx.fillStyle = '#3e2723';
+            cx.fillRect(6, 3, 4, 1);
+            cx.fillStyle = '#5d4037';
+            cx.fillRect(7, 5, 1, 1);
+            cx.fillRect(9, 5, 1, 1);
+            cx.fillStyle = '#8d6e63';
+            cx.fillRect(6, 14, 2, 2);
+            cx.fillRect(8, 14, 2, 2);
+            
+            return c;
+        }
+
+        function createEnemySprite() {
+            const c = document.createElement('canvas');
+            c.width = c.height = TILE_SIZE;
+            const cx = c.getContext('2d');
+            
+            cx.fillStyle = '#e74c3c';
+            cx.fillRect(6, 8, 4, 6);
+            cx.fillStyle = '#8b6f47';
+            cx.fillRect(6, 4, 4, 4);
+            cx.fillStyle = '#f39c12';
+            cx.fillRect(7, 5, 1, 1);
+            cx.fillRect(9, 5, 1, 1);
+            cx.fillStyle = '#34495e';
+            cx.fillRect(6, 14, 2, 2);
+            cx.fillRect(8, 14, 2, 2);
+            
+            return c;
+        }
+
+        function createItemSprite(type) {
+            const c = document.createElement('canvas');
+            c.width = c.height = TILE_SIZE;
+            const cx = c.getContext('2d');
+            
+            if (type === 'holyWater') {
+                cx.fillStyle = '#3498db';
+                cx.fillRect(6, 7, 4, 7);
+                cx.fillRect(7, 5, 2, 2);
+                cx.fillStyle = '#fff';
+                cx.fillRect(7, 8, 1, 2);
+            } else if (type === 'rosary') {
+                cx.fillStyle = '#8b4513';
+                for (let i = 0; i < 5; i++) {
+                    cx.fillRect(6 + i, 6 + i, 2, 2);
+                }
+            } else if (type === 'gold') {
+                cx.fillStyle = '#f39c12';
+                cx.beginPath();
+                cx.arc(8, 8, 3, 0, Math.PI * 2);
+                cx.fill();
+            }
+            
+            return c;
+        }
+
+        const sprites = {
+            floors: Array(10).fill().map(() => createTileSprite('floor')),
+            walls: Array(10).fill().map(() => createTileSprite('wall')),
+            player: createPlayerSprite(),
+            enemy: createEnemySprite(),
+            holyWater: createItemSprite('holyWater'),
+            rosary: createItemSprite('rosary'),
+            gold: createItemSprite('gold')
         };
 
-        let equippedVirtues = [];
+        // ===== MAP & DUNGEON GEN =====
+        const map = Array(MAP_HEIGHT).fill().map(() => Array(MAP_WIDTH).fill(0));
 
-        // All 7 Deadly Sins as Enemies (Vices)
-        const vices = [
-            { name: 'Pride', hp: 100, maxHp: 100, attack: 20, virtue: 'Humility' },
-            { name: 'Greed', hp: 120, maxHp: 120, attack: 25, virtue: 'Generosity' },
-            { name: 'Lust', hp: 90, maxHp: 90, attack: 15, virtue: 'Chastity' },
-            { name: 'Envy', hp: 110, maxHp: 110, attack: 22, virtue: 'Kindness' },
-            { name: 'Gluttony', hp: 130, maxHp: 130, attack: 28, virtue: 'Temperance' },
-            { name: 'Wrath', hp: 140, maxHp: 140, attack: 30, virtue: 'Patience' },
-            { name: 'Sloth', hp: 80, maxHp: 80, attack: 10, virtue: 'Diligence' }
-        ];
+        function generateDungeon(spawnDevilBoss = false) {
+            for (let y = 0; y < MAP_HEIGHT; y++) {
+                for (let x = 0; x < MAP_WIDTH; x++) {
+                    map[y][x] = 10 + Math.floor(Math.random() * sprites.walls.length);
+                }
+            }
 
-        let currentEnemy = null;
+            const rooms = [];
+            const numRooms = 10 + Math.floor(Math.random() * 5);
+            
+            for (let i = 0; i < numRooms; i++) {
+                const w = 5 + Math.floor(Math.random() * 8);
+                const h = 5 + Math.floor(Math.random() * 8);
+                const x = 2 + Math.floor(Math.random() * (MAP_WIDTH - w - 4));
+                const y = 2 + Math.floor(Math.random() * (MAP_HEIGHT - h - 4));
+                const room = { x, y, w, h };
 
-        // Quests for each sin
-        const quests = vices.map((vice, id) => ({
-            id,
-            name: `Defeat ${vice.name}`,
-            description: `Battle the vice of ${vice.name} to gain the virtue of ${vice.virtue}.`,
-            completed: false,
-            reward: vice.virtue
-        }));
+                let valid = true;
+                for (let r of rooms) {
+                    if (x < r.x + r.w + 2 && x + w + 2 > r.x &&
+                        y < r.y + r.h + 2 && y + h + 2 > r.y) {
+                        valid = false;
+                        break;
+                    }
+                }
+                
+                if (valid) {
+                    rooms.push(room);
+                    for (let ry = y; ry < y + h; ry++) {
+                        for (let rx = x; rx < x + w; rx++) {
+                            map[ry][rx] = Math.floor(Math.random() * sprites.floors.length);
+                        }
+                    }
+                }
+            }
 
-        // Saints associated with virtues
-        const saints = [
-            { virtue: 'Humility', name: 'St. Francis of Assisi', image: '🕊️', quote: 'Preach the Gospel at all times and when necessary use words.' },
-            { virtue: 'Generosity', name: 'St. Nicholas of Myra', image: '🎁', quote: 'The giver of every good and perfect gift has called upon us to mimic His giving.' },
-            { virtue: 'Chastity', name: 'St. Maria Goretti', image: '🤍', quote: 'Young people, do not be afraid to be saints.' },
-            { virtue: 'Kindness', name: 'St. Thérèse of Lisieux', image: '🌹', quote: 'Holiness does not consist in this or that practice; it consists in loving God.' },
-            { virtue: 'Temperance', name: 'St. Thomas Aquinas', image: '📖', quote: 'To one who has faith, no explanation is necessary.' },
-            { virtue: 'Patience', name: 'St. Catherine of Siena', image: '✝️', quote: 'You are rewarded not according to your work or your time but according to the measure of your love.' },
-            { virtue: 'Diligence', name: 'St. John Vianney', image: '⛪', quote: 'Prayer is the inner bath of love into which the soul plunges itself.' }
-        ];
+            for (let i = 0; i < rooms.length - 1; i++) {
+                const r1 = rooms[i];
+                const r2 = rooms[i + 1];
+                const cx1 = r1.x + Math.floor(r1.w / 2);
+                const cy1 = r1.y + Math.floor(r1.h / 2);
+                const cx2 = r2.x + Math.floor(r2.w / 2);
+                const cy2 = r2.y + Math.floor(r2.h / 2);
 
-        // Start Combat
-        function startCombat(viceIndex) {
-            currentEnemy = { ...vices[viceIndex] };
-            document.getElementById('enemyHp').innerText = `HP: ${currentEnemy.hp}`;
-            document.getElementById('playerHp').innerText = `HP: ${player.hp}`;
-            document.getElementById('combatMessage').innerText = `Battle against ${currentEnemy.name} begins!`;
-            document.getElementById('combatModal').classList.add('active');
+                for (let x = Math.min(cx1, cx2); x <= Math.max(cx1, cx2); x++) {
+                    map[cy1][x] = Math.floor(Math.random() * sprites.floors.length);
+                }
+                for (let y = Math.min(cy1, cy2); y <= Math.max(cy1, cy2); y++) {
+                    map[y][cx2] = Math.floor(Math.random() * sprites.floors.length);
+                }
+            }
+
+            const startRoom = rooms[0];
+            player.x = (startRoom.x + startRoom.w / 2) * TILE_SIZE;
+            player.y = (startRoom.y + startRoom.h / 2) * TILE_SIZE;
+
+            enemies.length = 0;
+            pickups.length = 0;
+
+            let enemyCount = 0;
+            const minEnemies = 2;
+
+            for (let i = 1; i < rooms.length; i++) {
+                const room = rooms[i];
+                
+                if (Math.random() < 0.5 + dungeonLevel * 0.05 || enemyCount < minEnemies) {
+                    let vice;
+                    
+                    if (spawnDevilBoss && enemyCount === 0) {
+                        vice = DEVIL_BOSS;
+                    } else {
+                        const availableVices = VICES.filter(v => 
+                            !DEADLY_SINS.includes(v.name) || !defeatedSins.has(v.name)
+                        );
+                        const viceIndex = Math.floor(Math.random() * availableVices.length);
+                        vice = availableVices[viceIndex];
+                    }
+                    
+                    const ex = (room.x + 1 + Math.random() * (room.w - 2)) * TILE_SIZE;
+                    const ey = (room.y + 1 + Math.random() * (room.h - 2)) * TILE_SIZE;
+                    enemies.push({
+                        x: ex,
+                        y: ey,
+                        vx: 0,
+                        vy: 0,
+                        speed: 30 + dungeonLevel * 5,
+                        vice: vice
+                    });
+                    enemyCount++;
+                }
+                
+                const numPicks = 1 + Math.floor(Math.random() * 3);
+                for (let j = 0; j < numPicks; j++) {
+                    if (Math.random() < 0.7) {
+                        const px = (room.x + 1 + Math.random() * (room.w - 2)) * TILE_SIZE;
+                        const py = (room.y + 1 + Math.random() * (room.h - 2)) * TILE_SIZE;
+                        const typeRand = Math.random();
+                        let type;
+                        if (typeRand < 0.4) type = 'holyWater';
+                        else if (typeRand < 0.7) type = 'rosary';
+                        else type = 'gold';
+                        pickups.push({ x: px, y: py, type });
+                    }
+                }
+            }
         }
 
-        // Player Attack with ATB QTE
-        function playerAttack() {
-            if (!currentEnemy) return;
-            document.getElementById('combatMessage').innerText = 'Focus your virtue...';
-            // QTE bar
-            let qte = document.createElement('div'); qte.id='qte-bar'; qte.style.cssText='height:8px;background:#0f0;width:0;';
-            document.querySelector('.combat-buttons').prepend(qte);
-            let w = 0; let timer = setInterval(()=>{ w+=2; qte.style.width=w+'%'; if(w>=100){clearInterval(timer); doDamage();} },20);
-            function doDamage(){
-                let bonus = equippedVirtues.length * 5;
-                let dmg = 15 + bonus + Math.floor(Math.random()*25);
-                currentEnemy.hp -= dmg;
-                document.getElementById('hit').play();
-                document.getElementById('combatMessage').innerText = `Virtue strike! ${dmg} damage!`;
-                document.getElementById('enemyHp').innerText = `HP: ${Math.max(0, currentEnemy.hp)}`;
-                if (currentEnemy.hp <= 0) {
-                    winCombat();
+        // ===== ENTITIES =====
+        const player = {
+            x: TILE_SIZE * 5,
+            y: TILE_SIZE * 5,
+            vx: 0,
+            vy: 0,
+            speed: 80
+        };
+
+        let enemies = [];
+        let pickups = [];
+        
+        const inventory = { 
+            holyWater: 3, 
+            rosaries: 2,
+            gold: 0,
+            atkBoost: 0,
+            defBoost: 0,
+            hpBoost: 0
+        };
+
+        // ===== VICES AND CATECHISM =====
+        const DEADLY_SINS = ['Pride', 'Greed', 'Lust', 'Envy', 'Gluttony', 'Wrath', 'Sloth'];
+        let defeatedSins = new Set();
+        
+        const DEVIL_BOSS = {
+            name: "The Devil",
+            minion: "Demon",
+            catechism: "The Devil and demons are fallen angels who rejected God. Through Christ's victory on the cross, Satan's power is broken. We must resist the devil through prayer, the sacraments, and faithful obedience to God.",
+            verse: "The God of peace will soon crush Satan under your feet. The grace of our Lord Jesus be with you.",
+            reference: "Romans 16:20"
+        };
+        
+        const VICES = [
+            {
+                name: "Pride",
+                minion: "Arrogance",
+                catechism: "Pride is excessive love of one's own excellence. It is contrary to the virtue of humility and was the sin of Lucifer. The Church teaches that pride is the beginning of all sin.",
+                verse: "Pride goes before destruction, a haughty spirit before a fall.",
+                reference: "Proverbs 16:18"
+            },
+            {
+                name: "Greed",
+                minion: "Avarice",
+                catechism: "Greed is the immoderate desire for earthly goods and the power they bring. The Catechism warns against making money an idol and teaches us to trust in God's providence.",
+                verse: "The love of money is a root of all kinds of evil. Some people, eager for money, have wandered from the faith.",
+                reference: "1 Timothy 6:10"
+            },
+            {
+                name: "Lust",
+                minion: "Desire",
+                catechism: "Lust is disordered desire for sexual pleasure isolated from its unitive and procreative purposes. The Church calls us to chastity and purity of heart.",
+                verse: "Flee from sexual immorality. All other sins a person commits are outside the body, but whoever sins sexually, sins against their own body.",
+                reference: "1 Corinthians 6:18"
+            },
+            {
+                name: "Envy",
+                minion: "Jealousy",
+                catechism: "Envy is sadness at another's good fortune and the immoderate desire to acquire goods for oneself. It is contrary to the tenth commandment and leads to malice.",
+                verse: "A heart at peace gives life to the body, but envy rots the bones.",
+                reference: "Proverbs 14:30"
+            },
+            {
+                name: "Gluttony",
+                minion: "Excess",
+                catechism: "Gluttony is the immoderate desire for the pleasure of eating and drinking. The Church teaches moderation and self-control as fruits of the Holy Spirit.",
+                verse: "Do not join those who drink too much wine or gorge themselves on meat, for drunkards and gluttons become poor.",
+                reference: "Proverbs 23:20-21"
+            },
+            {
+                name: "Wrath",
+                minion: "Rage",
+                catechism: "Anger becomes the sin of wrath when it is disproportionate to the offense and when it seeks revenge rather than justice. We are called to forgive as Christ forgave us.",
+                verse: "Get rid of all bitterness, rage and anger, brawling and slander, along with every form of malice.",
+                reference: "Ephesians 4:31"
+            },
+            {
+                name: "Sloth",
+                minion: "Apathy",
+                catechism: "Sloth is spiritual laziness and neglect of divine grace. It shows itself in reluctance toward prayer, the sacraments, and works of charity.",
+                verse: "The sluggard's craving will be the death of him, because his hands refuse to work.",
+                reference: "Proverbs 21:25"
+            }
+        ];
+
+        // ===== HEROES =====
+        const heroes = [
+            {
+                name: "St. Vincent",
+                hp: 100,
+                maxHp: 100,
+                mp: 30,
+                maxMp: 30,
+                atk: 15,
+                def: 8,
+                color: '#9b59b6'
+            },
+            {
+                name: "St. Michael",
+                hp: 120,
+                maxHp: 120,
+                mp: 25,
+                maxMp: 25,
+                atk: 18,
+                def: 6,
+                color: '#3498db'
+            },
+            {
+                name: "St. Joan",
+                hp: 110,
+                maxHp: 110,
+                mp: 35,
+                maxMp: 35,
+                atk: 14,
+                def: 10,
+                color: '#e74c3c'
+            }
+        ];
+
+        // ===== BATTLE SYSTEM =====
+        const battle = {
+            enemies: [],
+            currentHeroIndex: 0,
+            menuSelection: 0,
+            targetSelection: 0,
+            itemSelection: 0,
+            phase: 'menu', // 'menu', 'target', 'item', 'executing', 'enemyTurn'
+            log: [],
+            shake: 0,
+            flash: 0
+        };
+
+        const BATTLE_ACTIONS = ['Attack', 'Holy Magic', 'Item', 'Flee'];
+        const ITEM_ACTIONS = ['Holy Water', 'Rosary', 'Back'];
+
+        function startBattle(enemyObj) {
+            gameState = 'battle';
+            
+            const isFinalBoss = enemyObj.vice && enemyObj.vice.name === "The Devil";
+            
+            heroes.forEach(hero => {
+                hero.hp = hero.maxHp + inventory.hpBoost;
+                hero.mp = hero.maxMp;
+                hero.atk = (hero.name === "St. Vincent" ? 15 : hero.name === "St. Michael" ? 18 : 14) + inventory.atkBoost;
+                hero.def = (hero.name === "St. Vincent" ? 8 : hero.name === "St. Michael" ? 6 : 10) + inventory.defBoost;
+            });
+            
+            let viceHp, minionHp, viceAtk, minionAtk;
+            
+            if (isFinalBoss) {
+                viceHp = 200;
+                minionHp = 100;
+                viceAtk = 30;
+                minionAtk = 20;
+            } else {
+                viceHp = 50 + dungeonLevel * 10;
+                minionHp = 30 + dungeonLevel * 8;
+                viceAtk = 15 + dungeonLevel * 2;
+                minionAtk = 10 + dungeonLevel * 1;
+            }
+            
+            battle.enemies = [
+                {
+                    name: enemyObj.vice.name,
+                    hp: viceHp,
+                    maxHp: viceHp,
+                    atk: viceAtk,
+                    def: 4,
+                    isMinion: false,
+                    vice: enemyObj.vice
+                },
+                {
+                    name: enemyObj.vice.minion,
+                    hp: minionHp,
+                    maxHp: minionHp,
+                    atk: minionAtk,
+                    def: 2,
+                    isMinion: true,
+                    vice: enemyObj.vice
+                }
+            ];
+            
+            battle.currentHeroIndex = 0;
+            battle.menuSelection = 0;
+            battle.targetSelection = 0;
+            battle.itemSelection = 0;
+            battle.phase = 'menu';
+            battle.log = [`Facing ${enemyObj.vice.name}!`, `${heroes[0].name}'s turn!`];
+            battle.shake = 0;
+            battle.flash = 0;
+        }
+
+        function findNextAliveEnemy() {
+            for (let i = 0; i < battle.enemies.length; i++) {
+                if (battle.enemies[i].hp > 0) {
+                    return i;
+                }
+            }
+            return 0;
+        }
+
+        function executeBattleAction() {
+            const hero = heroes[battle.currentHeroIndex];
+            const action = BATTLE_ACTIONS[battle.menuSelection];
+            
+            if (action === 'Attack') {
+                const target = battle.enemies[battle.targetSelection];
+                if (target.hp > 0) {
+                    const damage = Math.max(1, hero.atk - target.def + Math.floor(Math.random() * 5));
+                    target.hp -= damage;
+                    battle.log.unshift(`${hero.name} deals ${damage} damage to ${target.name}!`);
+                    battle.flash = 15;
+                    battle.shake = 8;
+                }
+            } else if (action === 'Holy Magic') {
+                if (hero.mp >= 10) {
+                    const target = battle.enemies[battle.targetSelection];
+                    if (target.hp > 0) {
+                        const damage = Math.floor(hero.atk * 1.5) + Math.floor(Math.random() * 8);
+                        target.hp -= damage;
+                        hero.mp -= 10;
+                        battle.log.unshift(`${hero.name} casts Holy Magic for ${damage} damage!`);
+                        battle.flash = 20;
+                        battle.shake = 10;
+                    }
+                } else {
+                    battle.log.unshift(`${hero.name} lacks MP!`);
+                }
+            } else if (action === 'Flee') {
+                if (Math.random() < 0.6) {
+                    battle.log.unshift('Got away safely!');
+                    setTimeout(() => {
+                        gameState = 'explore';
+                    }, 1000);
+                    return;
+                } else {
+                    battle.log.unshift("Couldn't escape!");
+                }
+            }
+            
+            if (battle.log.length > 5) battle.log.pop();
+            
+            checkBattleEnd();
+            if (gameState !== 'battle') return;
+            
+            battle.currentHeroIndex++;
+            if (battle.currentHeroIndex >= heroes.length) {
+                battle.phase = 'enemyTurn';
+                setTimeout(executeEnemyTurn, 800);
+            } else {
+                battle.phase = 'menu';
+                battle.menuSelection = 0;
+                battle.targetSelection = findNextAliveEnemy();
+                battle.log.unshift(`${heroes[battle.currentHeroIndex].name}'s turn!`);
+            }
+        }
+
+        function useItem() {
+            const hero = heroes[battle.currentHeroIndex];
+            const item = ITEM_ACTIONS[battle.itemSelection];
+            
+            if (item === 'Holy Water') {
+                if (inventory.holyWater > 0) {
+                    hero.hp = Math.min(hero.maxHp + inventory.hpBoost, hero.hp + 50);
+                    inventory.holyWater--;
+                    battle.log.unshift(`${hero.name} drinks Holy Water! +50 HP`);
+                } else {
+                    battle.log.unshift('No Holy Water!');
                     return;
                 }
-                enemyAttack();
+            } else if (item === 'Rosary') {
+                if (inventory.rosaries > 0) {
+                    const damage = 30 + dungeonLevel * 5;
+                    battle.enemies.forEach(enemy => {
+                        if (enemy.hp > 0) {
+                            enemy.hp -= damage;
+                        }
+                    });
+                    inventory.rosaries--;
+                    battle.log.unshift(`${hero.name} prays! Divine light strikes all foes!`);
+                    battle.flash = 25;
+                    battle.shake = 12;
+                } else {
+                    battle.log.unshift('No Rosary!');
+                    return;
+                }
+            }
+            
+            if (battle.log.length > 5) battle.log.pop();
+            
+            checkBattleEnd();
+            if (gameState !== 'battle') return;
+            
+            battle.currentHeroIndex++;
+            if (battle.currentHeroIndex >= heroes.length) {
+                battle.phase = 'enemyTurn';
+                setTimeout(executeEnemyTurn, 800);
+            } else {
+                battle.phase = 'menu';
+                battle.menuSelection = 0;
+                battle.itemSelection = 0;
+                battle.targetSelection = findNextAliveEnemy();
+                battle.log.unshift(`${heroes[battle.currentHeroIndex].name}'s turn!`);
             }
         }
 
-        // Player Heal
-        function playerHeal() {
-            const heal = Math.floor(Math.random() * 20) + 10;
-            player.hp = Math.min(player.maxHp, player.hp + heal);
-            document.getElementById('combatMessage').innerText = `You prayed and healed ${heal} HP!`;
-            document.getElementById('playerHp').innerText = `HP: ${player.hp}`;
-            enemyAttack();
-        }
-
-        // Enemy Attack
-        function enemyAttack() {
-            const damage = Math.floor(Math.random() * currentEnemy.attack) + 5;
-            player.hp -= damage;
-            document.getElementById('combatMessage').innerText += `\n${currentEnemy.name} attacked for ${damage} damage!`;
-            document.getElementById('playerHp').innerText = `HP: ${Math.max(0, player.hp)}`;
-            if (player.hp <= 0) {
-                loseCombat();
-            }
-        }
-
-        // Win Combat
-        function winCombat() {
-            const questId = vices.findIndex(v => v.name === currentEnemy.name);
-            quests[questId].completed = true;
-            player.virtues.push(quests[questId].reward);
-            equippedVirtues.push(quests[questId].reward);
-            document.getElementById('victory').play();
-            document.getElementById('combatMessage').innerText += `\nYou defeated ${currentEnemy.name} and gained the virtue of ${quests[questId].reward}!`;
-            updateQuestLog();
-            updateProgress();
-            showSaintModal(quests[questId].reward);
-            checkAllCompleted();
-            setTimeout(endCombat, 3000);
-        }
-
-        // Show Saint Modal
-        function showSaintModal(virtue) {
-            const saint = saints.find(s => s.virtue === virtue);
-            if (saint) {
-                document.querySelector('.saint-title').innerText = saint.name;
-                document.querySelector('.saint-image').innerText = saint.image;
-                document.querySelector('.saint-quote').innerText = saint.quote;
-                document.getElementById('saintModal').classList.add('active');
-            }
-        }
-
-        // Lose Combat
-        function loseCombat() {
-            document.getElementById('combatMessage').innerText += '\nYou were defeated. Pray harder next time...';
-            player.hp = player.maxHp;
-            setTimeout(endCombat, 2000);
-        }
-
-        // End Combat
-        function endCombat() {
-            document.getElementById('combatModal').classList.remove('active');
-            currentEnemy = null;
-        }
-
-        // Start Quest
-        function startQuest(questId) {
-            if (quests[questId].completed) {
-                alert('Quest already completed!');
+        function executeEnemyTurn() {
+            let aliveEnemies = battle.enemies.filter(e => e.hp > 0);
+            
+            if (aliveEnemies.length === 0) {
+                checkBattleEnd();
                 return;
             }
-            startCombat(questId);
-        }
-
-        // Toggle Quest Log
-        function toggleQuestLog() {
-            const log = document.getElementById('questLog');
-            log.classList.toggle('active');
-            updateQuestLog();
-        }
-
-        // Update Quest Log
-        function updateQuestLog() {
-            const list = document.getElementById('questList');
-            list.innerHTML = '';
-            quests.forEach(q => {
-                const li = document.createElement('li');
-                li.innerText = `${q.name}: ${q.description} - ${q.completed ? 'Completed' : 'Pending'}`;
-                if (!q.completed) {
-                    const btn = document.createElement('button');
-                    btn.innerText = 'Start Quest';
-                    btn.onclick = () => startQuest(q.id);
-                    li.appendChild(btn);
+            
+            let enemyIndex = 0;
+            
+            function processNextEnemy() {
+                while (enemyIndex < aliveEnemies.length) {
+                    const enemy = aliveEnemies[enemyIndex];
+                    const aliveHeroes = heroes.filter(h => h.hp > 0);
+                    
+                    if (aliveHeroes.length === 0) {
+                        checkBattleEnd();
+                        return;
+                    }
+                    
+                    const target = aliveHeroes[Math.floor(Math.random() * aliveHeroes.length)];
+                    const damage = Math.max(1, enemy.atk - target.def + Math.floor(Math.random() * 5));
+                    target.hp -= damage;
+                    
+                    battle.log.unshift(`${enemy.name} attacks ${target.name} for ${damage} damage!`);
+                    if (battle.log.length > 5) battle.log.pop();
+                    
+                    battle.shake = 6;
+                    battle.flash = 10;
+                    
+                    enemyIndex++;
+                    
+                    if (enemyIndex < aliveEnemies.length) {
+                        setTimeout(processNextEnemy, 1000);
+                        return;
+                    } else {
+                        checkBattleEnd();
+                        if (gameState === 'battle') {
+                            battle.currentHeroIndex = 0;
+                            battle.phase = 'menu';
+                            battle.menuSelection = 0;
+                            battle.targetSelection = findNextAliveEnemy();
+                            battle.log.unshift(`${heroes[0].name}'s turn!`);
+                        }
+                        return;
+                    }
                 }
-                list.appendChild(li);
+            }
+            
+            processNextEnemy();
+        }
+
+        function checkBattleEnd() {
+            if (heroes.every(h => h.hp <= 0)) {
+                battle.log.unshift('All heroes defeated!');
+                setTimeout(() => endBattle(false), 1500);
+            } else if (battle.enemies.every(e => e.hp <= 0)) {
+                battle.log.unshift(`Victory over ${battle.enemies[0].vice.name}!`);
+                setTimeout(() => endBattle(true), 1500);
+            }
+        }
+
+        function endBattle(won) {
+            if (won) {
+                enemies = enemies.filter(e => e.vice !== battle.enemies[0].vice);
+                
+                if (battle.enemies[0].vice.name === "The Devil") {
+                    showViceTeaching(battle.enemies[0].vice, () => {
+                        showGameVictory();
+                    });
+                    return;
+                }
+                
+                if (DEADLY_SINS.includes(battle.enemies[0].vice.name)) {
+                    defeatedSins.add(battle.enemies[0].vice.name);
+                    
+                    if (defeatedSins.size >= 7) {
+                        showViceTeaching(battle.enemies[0].vice, () => {
+                            hudMsg = 'All Seven Deadly Sins defeated! Final battle awaits...';
+                            hudMsgTimer = 4;
+                            dungeonLevel++;
+                            generateDungeon(true);
+                            gameState = 'explore';
+                        });
+                        return;
+                    }
+                }
+                
+                dungeonLevel++;
+                
+                showViceTeaching(battle.enemies[0].vice, () => {
+                    hudMsg = `Victory! Level ${dungeonLevel}`;
+                    hudMsgTimer = 3;
+                    generateDungeon();
+                    gameState = 'explore';
+                });
+            } else {
+                dungeonLevel = 1;
+                defeatedSins.clear();
+                hudMsg = 'Defeated! Starting over...';
+                hudMsgTimer = 3;
+                inventory.holyWater = 3;
+                inventory.rosaries = 2;
+                inventory.gold = 0;
+                inventory.atkBoost = 0;
+                inventory.defBoost = 0;
+                inventory.hpBoost = 0;
+                generateDungeon();
+                gameState = 'explore';
+            }
+        }
+
+        function showGameVictory() {
+            document.getElementById('quote-text').innerHTML = `
+                <div style="color: #f1c40f; font-size: 20px; font-weight: bold; margin-bottom: 12px;">
+                    🏆 VICTORY! 🏆
+                </div>
+                <div style="color: #2ecc71; font-size: 15px; margin-bottom: 12px;">
+                    The Devil has been vanquished!<br>
+                    Light triumphs over darkness!
+                </div>
+                <div style="color: #ecf0f1; font-size: 12px; font-style: italic; line-height: 1.4; margin-bottom: 8px;">
+                    "For I am convinced that neither death nor life, neither angels nor demons, 
+                    nor anything else in all creation, will be able to separate us from the love 
+                    of God that is in Christ Jesus our Lord."
+                </div>
+                <div style="color: #f39c12; font-size: 11px; font-weight: bold;">
+                    — Romans 8:38-39
+                </div>
+            `;
+            
+            document.getElementById('quote-author').textContent = '';
+            document.getElementById('quote-continue').textContent = 'New Game';
+            document.getElementById('quote-overlay').style.display = 'flex';
+            
+            const continueBtn = document.getElementById('quote-continue');
+            const handleContinue = () => {
+                document.getElementById('quote-overlay').style.display = 'none';
+                continueBtn.removeEventListener('click', handleContinue);
+                continueBtn.removeEventListener('touchend', handleContinue);
+                dungeonLevel = 1;
+                defeatedSins.clear();
+                inventory.holyWater = 3;
+                inventory.rosaries = 2;
+                inventory.gold = 0;
+                inventory.atkBoost = 0;
+                inventory.defBoost = 0;
+                inventory.hpBoost = 0;
+                generateDungeon();
+                gameState = 'explore';
+            };
+            
+            continueBtn.addEventListener('click', handleContinue);
+            continueBtn.addEventListener('touchend', handleContinue);
+        }
+
+        function wrapText(text, maxChars) {
+            const words = text.split(' ');
+            const lines = [];
+            let currentLine = '';
+            
+            for (let word of words) {
+                if ((currentLine + word).length > maxChars && currentLine !== '') {
+                    lines.push(currentLine.trim());
+                    currentLine = word + ' ';
+                } else {
+                    currentLine += word + ' ';
+                }
+            }
+            if (currentLine.trim() !== '') {
+                lines.push(currentLine.trim());
+            }
+            
+            return lines;
+        }
+
+        function showViceTeaching(vice, callback) {
+            const catechismLines = wrapText(vice.catechism, 55);
+            const verseLines = wrapText(vice.verse, 55);
+            
+            document.getElementById('quote-text').innerHTML = `
+                <div style="color: #e74c3c; font-size: 18px; font-weight: bold; margin-bottom: 10px;">
+                    ${vice.name} Defeated!
+                </div>
+                <div style="color: #ecf0f1; font-size: 12px; line-height: 1.5; text-align: left; margin-bottom: 12px;">
+                    ${catechismLines.join('<br>')}
+                </div>
+                <div style="color: #3498db; font-size: 11px; font-style: italic; line-height: 1.4; text-align: left; margin-bottom: 5px;">
+                    "${verseLines.join('<br>')}"
+                </div>
+                <div style="color: #f39c12; font-size: 11px; font-weight: bold;">
+                    — ${vice.reference}
+                </div>
+            `;
+            
+            document.getElementById('quote-author').textContent = '';
+            document.getElementById('quote-overlay').style.display = 'flex';
+            
+            const continueBtn = document.getElementById('quote-continue');
+            const handleContinue = () => {
+                document.getElementById('quote-overlay').style.display = 'none';
+                continueBtn.removeEventListener('click', handleContinue);
+                continueBtn.removeEventListener('touchend', handleContinue);
+                callback();
+            };
+            
+            continueBtn.addEventListener('click', handleContinue);
+            continueBtn.addEventListener('touchend', handleContinue);
+        }
+
+        // ===== INVENTORY SYSTEM =====
+        let invSelection = 0;
+
+        function openInventory() {
+            gameState = 'inventory';
+            invSelection = 0;
+        }
+
+        // ===== INPUT =====
+        const keys = {};
+        const keyPressed = {};
+        
+        window.addEventListener('keydown', (e) => {
+            const k = e.key.toLowerCase();
+            if (!keys[k]) {
+                keyPressed[k] = true;
+            }
+            keys[k] = true;
+            
+            // Map A and B keys
+            if (k === 'a') {
+                keyPressed['enter'] = true;
+            }
+            if (k === 'b') {
+                keyPressed['escape'] = true;
+            }
+            
+            if (gameState === 'title') {
+                if (e.key === 'Enter' || k === 'a') {
+                    gameState = 'explore';
+                    generateDungeon();
+                } else if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+                    currentVerseIndex = e.key === 'ArrowRight' ? 
+                        (currentVerseIndex + 1) % titleScreenVerses.length :
+                        (currentVerseIndex + titleScreenVerses.length - 1) % titleScreenVerses.length;
+                    verseTimer = VERSE_DISPLAY_TIME;
+                }
+            } else if (gameState === 'battle') {
+                if (battle.phase === 'menu') {
+                    if (e.key === 'ArrowDown' || k === 's') {
+                        battle.menuSelection = Math.min(BATTLE_ACTIONS.length - 1, battle.menuSelection + 1);
+                    } else if (e.key === 'ArrowUp' || k === 'w') {
+                        battle.menuSelection = Math.max(0, battle.menuSelection - 1);
+                    } else if (e.key === 'Enter' || k === 'a') {
+                        if (BATTLE_ACTIONS[battle.menuSelection] === 'Item') {
+                            battle.phase = 'item';
+                            battle.itemSelection = 0;
+                        } else if (BATTLE_ACTIONS[battle.menuSelection] === 'Flee') {
+                            executeBattleAction();
+                        } else {
+                            battle.phase = 'target';
+                            battle.targetSelection = findNextAliveEnemy();
+                        }
+                    }
+                } else if (battle.phase === 'target') {
+                    if (e.key === 'ArrowDown' || k === 's') {
+                        let next = battle.targetSelection + 1;
+                        while (next < battle.enemies.length && battle.enemies[next].hp <= 0) {
+                            next++;
+                        }
+                        if (next < battle.enemies.length) {
+                            battle.targetSelection = next;
+                        }
+                    } else if (e.key === 'ArrowUp' || k === 'w') {
+                        let prev = battle.targetSelection - 1;
+                        while (prev >= 0 && battle.enemies[prev].hp <= 0) {
+                            prev--;
+                        }
+                        if (prev >= 0) {
+                            battle.targetSelection = prev;
+                        }
+                    } else if (e.key === 'Enter' || k === 'a') {
+                        battle.phase = 'executing';
+                        executeBattleAction();
+                    } else if (e.key === 'Escape' || k === 'b') {
+                        battle.phase = 'menu';
+                    }
+                } else if (battle.phase === 'item') {
+                    if (e.key === 'ArrowDown' || k === 's') {
+                        battle.itemSelection = Math.min(ITEM_ACTIONS.length - 1, battle.itemSelection + 1);
+                    } else if (e.key === 'ArrowUp' || k === 'w') {
+                        battle.itemSelection = Math.max(0, battle.itemSelection - 1);
+                    } else if (e.key === 'Enter' || k === 'a') {
+                        if (ITEM_ACTIONS[battle.itemSelection] === 'Back') {
+                            battle.phase = 'menu';
+                        } else {
+                            battle.phase = 'executing';
+                            useItem();
+                        }
+                    } else if (e.key === 'Escape' || k === 'b') {
+                        battle.phase = 'menu';
+                    }
+                }
+            } else if (gameState === 'inventory') {
+                if (e.key === 'ArrowDown' || k === 's') {
+                    invSelection = Math.min(2, invSelection + 1);
+                } else if (e.key === 'ArrowUp' || k === 'w') {
+                    invSelection = Math.max(0, invSelection - 1);
+                } else if (e.key === 'Escape' || k === 'b' || k === 'i') {
+                    gameState = 'explore';
+                }
+            } else if (gameState === 'explore') {
+                if (k === 'i' || (keyPressed['start'] && !keys['start'])) {
+                    openInventory();
+                    keyPressed['start'] = false;
+                }
+            }
+        });
+        
+        window.addEventListener('keyup', (e) => {
+            keys[e.key.toLowerCase()] = false;
+            keyPressed[e.key.toLowerCase()] = false;
+        });
+
+        // ===== TOUCH CONTROLS =====
+        function setupTouchControls() {
+            document.querySelectorAll('.dpad-btn:not(.center)').forEach(btn => {
+                const key = btn.dataset.key;
+                
+                btn.addEventListener('touchstart', (e) => {
+                    e.preventDefault();
+                    keys[key] = true;
+                    keyPressed[key] = true;
+                });
+                
+                btn.addEventListener('touchend', (e) => {
+                    e.preventDefault();
+                    keys[key] = false;
+                    keyPressed[key] = false;
+                });
+            });
+            
+            document.querySelectorAll('.game-btn, .start-btn').forEach(btn => {
+                const key = btn.dataset.key;
+                
+                btn.addEventListener('touchstart', (e) => {
+                    e.preventDefault();
+                    
+                    if (key === 'start') {
+                        if (gameState === 'explore') {
+                            openInventory();
+                        }
+                    } else if (key === 'a') {
+                        keyPressed['enter'] = true;
+                        const enterEvent = new KeyboardEvent('keydown', { key: 'Enter' });
+                        window.dispatchEvent(enterEvent);
+                    } else if (key === 'b') {
+                        keyPressed['escape'] = true;
+                        const escEvent = new KeyboardEvent('keydown', { key: 'Escape' });
+                        window.dispatchEvent(escEvent);
+                    }
+                });
+                
+                btn.addEventListener('touchend', (e) => {
+                    e.preventDefault();
+                    keyPressed[key] = false;
+                });
             });
         }
 
-        // Update Progress Bar
-        function updateProgress() {
-            const completed = player.virtues.length;
-            const total = quests.length;
-            const percent = (completed / total) * 100;
-            document.getElementById('progress-fill').style.width = `${percent}%`;
-            if (percent === 100) {
-                document.getElementById('progress-fill').style.filter = 'drop-shadow(0 0 15px gold)';
+        // ===== COLLISION =====
+        function collides(x, y) {
+            const tx = Math.floor(x / TILE_SIZE);
+            const ty = Math.floor(y / TILE_SIZE);
+            if (tx < 0 || tx >= MAP_WIDTH || ty < 0 || ty >= MAP_HEIGHT) return true;
+            return map[ty][tx] >= 10;
+        }
+
+        // ===== UPDATE =====
+        function update(dt) {
+            battle.shake *= 0.85;
+            battle.flash = Math.max(0, battle.flash - dt * 80);
+            hudMsgTimer = Math.max(0, hudMsgTimer - dt);
+
+            if (gameState === 'title') {
+                verseTimer -= dt;
+                if (verseTimer <= 0) {
+                    currentVerseIndex = (currentVerseIndex + 1) % titleScreenVerses.length;
+                    verseTimer = VERSE_DISPLAY_TIME;
+                }
+            } else if (gameState === 'explore') {
+                player.vx = 0;
+                player.vy = 0;
+                
+                if (keys['w'] || keys['arrowup']) player.vy = -player.speed;
+                if (keys['s'] || keys['arrowdown']) player.vy = player.speed;
+                if (keys['a'] || keys['arrowleft']) player.vx = -player.speed;
+                if (keys['d'] || keys['arrowright']) player.vx = player.speed;
+
+                const speed = Math.hypot(player.vx, player.vy);
+                if (speed > 0.1) {
+                    player.vx = (player.vx / speed) * player.speed;
+                    player.vy = (player.vy / speed) * player.speed;
+                }
+
+                const nextX = player.x + player.vx * dt;
+                const nextY = player.y + player.vy * dt;
+                
+                if (!collides(nextX, player.y) && !collides(nextX + TILE_SIZE - 1, player.y)) {
+                    player.x = nextX;
+                }
+                if (!collides(player.x, nextY) && !collides(player.x, nextY + TILE_SIZE - 1)) {
+                    player.y = nextY;
+                }
+
+                for (let i = pickups.length - 1; i >= 0; i--) {
+                    const p = pickups[i];
+                    const dx = player.x - p.x;
+                    const dy = player.y - p.y;
+                    
+                    if (Math.hypot(dx, dy) < TILE_SIZE) {
+                        if (p.type === 'holyWater') {
+                            inventory.holyWater++;
+                            const hpIncrease = 10;
+                            inventory.hpBoost += hpIncrease;
+                            heroes.forEach(h => h.maxHp += hpIncrease);
+                            hudMsg = `Holy Water! +${hpIncrease} Max HP!`;
+                        } else if (p.type === 'rosary') {
+                            inventory.rosaries++;
+                            const atkIncrease = 2;
+                            inventory.atkBoost += atkIncrease;
+                            hudMsg = `Rosary! +${atkIncrease} ATK!`;
+                        } else if (p.type === 'gold') {
+                            const goldAmount = 10 + Math.floor(Math.random() * 20);
+                            inventory.gold += goldAmount;
+                            hudMsg = `Found ${goldAmount} Gold!`;
+                        }
+                        hudMsgTimer = 2;
+                        pickups.splice(i, 1);
+                    }
+                }
+
+                for (let e of enemies) {
+                    e.x += e.vx * dt;
+                    e.y += e.vy * dt;
+                    
+                    if (collides(e.x, e.y) || Math.random() < dt * 2) {
+                        const angle = Math.random() * Math.PI * 2;
+                        e.vx = Math.cos(angle) * e.speed;
+                        e.vy = Math.sin(angle) * e.speed;
+                    }
+
+                    const dx = player.x - e.x;
+                    const dy = player.y - e.y;
+                    if (Math.hypot(dx, dy) < TILE_SIZE * 1.5) {
+                        startBattle(e);
+                        break;
+                    }
+                }
             }
         }
 
-        // Check if all quests completed
-        function checkAllCompleted() {
-            if (player.virtues.length === quests.length) {
-                document.getElementById('gardenModal').classList.add('active');
+        // ===== RENDER =====
+        function render() {
+            ctx.save();
+            ctx.scale(SCALE, SCALE);
+            ctx.clearRect(0, 0, VIEW_WIDTH, VIEW_HEIGHT);
+
+            if (gameState === 'title') {
+                ctx.fillStyle = '#1a1a2e';
+                ctx.fillRect(0, 0, VIEW_WIDTH, VIEW_HEIGHT);
+                
+                ctx.fillStyle = '#f39c12';
+                ctx.font = 'bold 16px monospace';
+                ctx.textAlign = 'center';
+                ctx.fillText('WARRIORS OF FAITH', VIEW_WIDTH/2, 30);
+                
+                ctx.font = 'bold 11px monospace';
+                ctx.fillStyle = '#9b59b6';
+                ctx.fillText('Battle Against Sin & Death', VIEW_WIDTH/2, 48);
+                
+                const verse = titleScreenVerses[currentVerseIndex];
+                ctx.font = '8px monospace';
+                ctx.fillStyle = '#ecf0f1';
+                
+                const lines = wrapText(verse.text, 50);
+                let y = 80;
+                for (let line of lines) {
+                    ctx.fillText(line, VIEW_WIDTH/2, y);
+                    y += 11;
+                }
+                
+                ctx.fillStyle = '#f39c12';
+                ctx.font = 'bold 9px monospace';
+                ctx.fillText(`— ${verse.reference}`, VIEW_WIDTH/2, y + 10);
+                
+                ctx.fillStyle = '#95a5a6';
+                ctx.font = '7px monospace';
+                ctx.fillText(`Verse ${currentVerseIndex + 1} of ${titleScreenVerses.length} (← →)`, VIEW_WIDTH/2, VIEW_HEIGHT - 40);
+                
+                ctx.fillStyle = '#2ecc71';
+                ctx.font = 'bold 10px monospace';
+                ctx.fillText('Press ENTER or A to Begin', VIEW_WIDTH/2, VIEW_HEIGHT - 20);
+                
+                ctx.textAlign = 'left';
+                
+            } else if (gameState === 'explore') {
+                const camX = Math.floor(player.x - VIEW_WIDTH / 2 + TILE_SIZE / 2);
+                const camY = Math.floor(player.y - VIEW_HEIGHT / 2 + TILE_SIZE / 2);
+
+                const startX = Math.max(0, Math.floor(camX / TILE_SIZE));
+                const endX = Math.min(MAP_WIDTH, Math.ceil((camX + VIEW_WIDTH) / TILE_SIZE));
+                const startY = Math.max(0, Math.floor(camY / TILE_SIZE));
+                const endY = Math.min(MAP_HEIGHT, Math.ceil((camY + VIEW_HEIGHT) / TILE_SIZE));
+
+                for (let ty = startY; ty < endY; ty++) {
+                    for (let tx = startX; tx < endX; tx++) {
+                        const tileIdx = map[ty][tx];
+                        const sprite = tileIdx >= 10 ? sprites.walls[tileIdx - 10] : sprites.floors[tileIdx];
+                        ctx.drawImage(sprite, tx * TILE_SIZE - camX, ty * TILE_SIZE - camY);
+                    }
+                }
+
+                for (let p of pickups) {
+                    ctx.drawImage(sprites[p.type], p.x - camX, p.y - camY);
+                }
+
+                for (let e of enemies) {
+                    ctx.drawImage(sprites.enemy, e.x - camX, e.y - camY);
+                    if (e.vice) {
+                        ctx.fillStyle = '#e74c3c';
+                        ctx.font = 'bold 6px monospace';
+                        ctx.textAlign = 'center';
+                        ctx.fillText(e.vice.name.toUpperCase(), e.x - camX + 8, e.y - camY - 2);
+                    }
+                }
+
+                ctx.drawImage(sprites.player, player.x - camX, player.y - camY);
+
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+                ctx.fillRect(5, 5, 115, 50);
+                ctx.fillStyle = '#f39c12';
+                ctx.font = '9px monospace';
+                ctx.textAlign = 'left';
+                ctx.fillText(`Level: ${dungeonLevel}`, 10, 15);
+                ctx.fillText(`Sins: ${defeatedSins.size}/7`, 10, 26);
+                ctx.fillText(`Gold: ${inventory.gold}`, 10, 37);
+                ctx.fillStyle = '#3498db';
+                ctx.fillText(`Water: ${inventory.holyWater}`, 10, 48);
+                ctx.fillStyle = '#8b4513';
+                ctx.fillText(`Rosary: ${inventory.rosaries}`, 65, 48);
+
+                if (hudMsgTimer > 0) {
+                    ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
+                    ctx.fillRect(VIEW_WIDTH/2 - 70, 10, 140, 20);
+                    ctx.fillStyle = '#2ecc71';
+                    ctx.textAlign = 'center';
+                    ctx.font = '8px monospace';
+                    ctx.fillText(hudMsg, VIEW_WIDTH/2, 20);
+                }
+                
+            } else if (gameState === 'battle') {
+                ctx.fillStyle = '#1a1a2e';
+                ctx.fillRect(0, 0, VIEW_WIDTH, VIEW_HEIGHT);
+
+                ctx.save();
+                if (battle.shake > 0) {
+                    ctx.translate(
+                        (Math.random() - 0.5) * battle.shake,
+                        (Math.random() - 0.5) * battle.shake
+                    );
+                }
+
+                if (battle.flash > 0) {
+                    ctx.globalAlpha = Math.min(0.5, battle.flash / 40);
+                    ctx.fillStyle = '#fff';
+                    ctx.fillRect(0, 0, VIEW_WIDTH, VIEW_HEIGHT);
+                    ctx.globalAlpha = 1;
+                }
+
+                // Heroes
+                const heroX = 30;
+                const heroStartY = 60;
+                const heroSpacing = 25;
+                
+                for (let i = 0; i < heroes.length; i++) {
+                    const hero = heroes[i];
+                    const y = heroStartY + i * heroSpacing;
+                    
+                    if (i === battle.currentHeroIndex && battle.phase !== 'enemyTurn') {
+                        ctx.fillStyle = 'rgba(46, 204, 113, 0.3)';
+                        ctx.fillRect(heroX - 5, y - 5, 100, 24);
+                    }
+                    
+                    ctx.drawImage(sprites.player, heroX, y);
+                    
+                    ctx.fillStyle = hero.color;
+                    ctx.font = 'bold 8px monospace';
+                    ctx.textAlign = 'left';
+                    ctx.fillText(hero.name, heroX + 20, y + 2);
+                    
+                    // HP Bar
+                    ctx.fillStyle = '#34495e';
+                    ctx.fillRect(heroX + 20, y + 10, 70, 5);
+                    const hpPercent = hero.hp / (hero.maxHp + inventory.hpBoost);
+                    ctx.fillStyle = hpPercent > 0.5 ? '#2ecc71' : hpPercent > 0.25 ? '#f39c12' : '#e74c3c';
+                    ctx.fillRect(heroX + 20, y + 10, 70 * Math.max(0, hpPercent), 5);
+                    
+                    ctx.fillStyle = '#fff';
+                    ctx.font = '7px monospace';
+                    ctx.fillText(`${Math.max(0, hero.hp)}/${hero.maxHp + inventory.hpBoost}`, heroX + 95, y + 14);
+                }
+
+                // Enemies
+                const enemyX = VIEW_WIDTH - 80;
+                const enemyStartY = 70;
+                const enemySpacing = 30;
+                
+                for (let i = 0; i < battle.enemies.length; i++) {
+                    const enemy = battle.enemies[i];
+                    const y = enemyStartY + i * enemySpacing;
+                    
+                    if (enemy.hp > 0) {
+                        if (i === battle.targetSelection && battle.phase === 'target') {
+                            ctx.fillStyle = 'rgba(231, 76, 60, 0.3)';
+                            ctx.fillRect(enemyX - 5, y - 5, 75, 24);
+                        }
+                        
+                        ctx.drawImage(sprites.enemy, enemyX, y);
+                        
+                        ctx.fillStyle = '#e74c3c';
+                        ctx.font = 'bold 8px monospace';
+                        ctx.textAlign = 'right';
+                        ctx.fillText(enemy.name, enemyX - 5, y + 5);
+                        
+                        // HP Bar
+                        ctx.fillStyle = '#34495e';
+                        ctx.fillRect(enemyX - 60, y + 10, 55, 5);
+                        ctx.fillStyle = '#e74c3c';
+                        ctx.fillRect(enemyX - 60, y + 10, 55 * (enemy.hp / enemy.maxHp), 5);
+                    } else {
+                        ctx.fillStyle = 'rgba(149, 165, 166, 0.5)';
+                        ctx.font = 'bold 7px monospace';
+                        ctx.textAlign = 'right';
+                        ctx.fillText('DEFEATED', enemyX - 5, y + 8);
+                    }
+                }
+
+                // Battle menu
+                ctx.fillStyle = 'rgba(22, 33, 62, 0.95)';
+                ctx.fillRect(0, VIEW_HEIGHT - 50, VIEW_WIDTH, 50);
+                
+                if (battle.phase === 'menu') {
+                    const btnWidth = 50;
+                    const btnStartX = 20;
+                    const btnY = VIEW_HEIGHT - 38;
+                    
+                    for (let i = 0; i < BATTLE_ACTIONS.length; i++) {
+                        const btnX = btnStartX + i * (btnWidth + 5);
+                        
+                        ctx.fillStyle = i === battle.menuSelection ? '#f39c12' : '#34495e';
+                        ctx.fillRect(btnX, btnY, btnWidth, 20);
+                        
+                        ctx.fillStyle = '#fff';
+                        ctx.font = '8px monospace';
+                        ctx.textAlign = 'center';
+                        ctx.fillText(BATTLE_ACTIONS[i], btnX + btnWidth/2, btnY + 12);
+                    }
+                    
+                    ctx.fillStyle = '#95a5a6';
+                    ctx.font = '7px monospace';
+                    ctx.textAlign = 'left';
+                    ctx.fillText('↑↓ Select | A Confirm', 20, VIEW_HEIGHT - 10);
+                    
+                } else if (battle.phase === 'target') {
+                    ctx.fillStyle = '#fff';
+                    ctx.font = '9px monospace';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('Select Target', VIEW_WIDTH/2, VIEW_HEIGHT - 35);
+                    
+                    ctx.fillStyle = '#95a5a6';
+                    ctx.font = '7px monospace';
+                    ctx.fillText('↑↓ Select | A Confirm | B Back', VIEW_WIDTH/2, VIEW_HEIGHT - 10);
+                    
+                } else if (battle.phase === 'item') {
+                    const btnWidth = 60;
+                    const btnStartX = 60;
+                    const btnY = VIEW_HEIGHT - 38;
+                    
+                    for (let i = 0; i < ITEM_ACTIONS.length; i++) {
+                        const btnX = btnStartX + i * (btnWidth + 5);
+                        
+                        ctx.fillStyle = i === battle.itemSelection ? '#f39c12' : '#34495e';
+                        ctx.fillRect(btnX, btnY, btnWidth, 20);
+                        
+                        ctx.fillStyle = '#fff';
+                        ctx.font = '8px monospace';
+                        ctx.textAlign = 'center';
+                        let label = ITEM_ACTIONS[i];
+                        if (i === 0) label += ` (${inventory.holyWater})`;
+                        if (i === 1) label += ` (${inventory.rosaries})`;
+                        ctx.fillText(label, btnX + btnWidth/2, btnY + 12);
+                    }
+                    
+                    ctx.fillStyle = '#95a5a6';
+                    ctx.font = '7px monospace';
+                    ctx.textAlign = 'left';
+                    ctx.fillText('↑↓ Select | A Confirm | B Back', 20, VIEW_HEIGHT - 10);
+                }
+                
+                // Battle log
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
+                ctx.fillRect(10, 15, VIEW_WIDTH - 20, 40);
+                ctx.fillStyle = '#ecf0f1';
+                ctx.font = '8px monospace';
+                ctx.textAlign = 'left';
+                for (let i = 0; i < Math.min(4, battle.log.length); i++) {
+                    ctx.fillText(battle.log[i], 15, 25 + i * 10);
+                }
+
+                ctx.restore();
+                
+            } else if (gameState === 'inventory') {
+                ctx.fillStyle = '#1a1a2e';
+                ctx.fillRect(0, 0, VIEW_WIDTH, VIEW_HEIGHT);
+                
+                ctx.fillStyle = '#f39c12';
+                ctx.font = 'bold 14px monospace';
+                ctx.textAlign = 'center';
+                ctx.fillText('INVENTORY', VIEW_WIDTH/2, 20);
+                
+                ctx.font = '10px monospace';
+                ctx.textAlign = 'left';
+                
+                const items = [
+                    { name: 'Holy Water', value: inventory.holyWater, desc: `+50 HP, +10 Max HP per pickup` },
+                    { name: 'Rosary', value: inventory.rosaries, desc: `AOE attack, +2 ATK per pickup` },
+                    { name: 'Gold', value: inventory.gold, desc: 'Currency for future shops' }
+                ];
+                
+                for (let i = 0; i < items.length; i++) {
+                    const y = 50 + i * 35;
+                    
+                    ctx.fillStyle = i === invSelection ? 'rgba(243, 156, 18, 0.3)' : 'rgba(0, 0, 0, 0.5)';
+                    ctx.fillRect(15, y, VIEW_WIDTH - 30, 30);
+                    
+                    ctx.fillStyle = '#fff';
+                    ctx.fillText(`${items[i].name}: ${items[i].value}`, 25, y + 12);
+                    ctx.fillStyle = '#95a5a6';
+                    ctx.font = '8px monospace';
+                    ctx.fillText(items[i].desc, 25, y + 24);
+                    ctx.font = '10px monospace';
+                }
+                
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+                ctx.fillRect(15, 165, VIEW_WIDTH - 30, 25);
+                ctx.fillStyle = '#2ecc71';
+                ctx.fillText(`ATK Boost: +${inventory.atkBoost}`, 25, 178);
+                ctx.fillText(`HP Boost: +${inventory.hpBoost}`, 110, 178);
+                
+                ctx.fillStyle = '#95a5a6';
+                ctx.font = '8px monospace';
+                ctx.textAlign = 'center';
+                ctx.fillText('Press B or I to close', VIEW_WIDTH/2, VIEW_HEIGHT - 10);
             }
+
+            ctx.restore();
         }
 
-        // Save and Load
-        function saveGame() {
-            localStorage.setItem('virtueRPG', JSON.stringify({player, equippedVirtues, quests}));
-        }
-        function loadGame() {
-            const s = localStorage.getItem('virtueRPG');
-            if (s) {
-                const d = JSON.parse(s);
-                player = d.player;
-                equippedVirtues = d.equippedVirtues || [];
-                quests = d.quests || quests;
-                updateQuestLog();
-                updateProgress();
-            }
+        // ===== GAME LOOP =====
+        let lastTime = performance.now();
+        function gameLoop(currentTime) {
+            const dt = Math.min(0.033, (currentTime - lastTime) / 1000);
+            lastTime = currentTime;
+            
+            update(dt);
+            render();
+            
+            requestAnimationFrame(gameLoop);
         }
 
-        // Initialize
+        // ===== INITIALIZATION =====
         function init() {
-            loadGame(); // Load on start
-            updateQuestLog();
-            updateProgress();
+            console.log('Warriors of Faith initialized!');
+            setupTouchControls();
+            verseTimer = VERSE_DISPLAY_TIME;
+            requestAnimationFrame(gameLoop);
         }
 
         init();
