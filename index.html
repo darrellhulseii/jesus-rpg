@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Warriors of Faith: Battle Against Sin</title>
+    <title>The Seven Heavenly Virtues</title>
     <style>
         body { 
             margin: 0; 
@@ -33,7 +33,6 @@
         }
         #info strong { color: #f39c12; }
         
-        /* Game Boy Style Controls */
         #gameboy-controls {
             position: fixed;
             bottom: 20px;
@@ -72,50 +71,15 @@
             transition: all 0.05s;
         }
         
-        .dpad-btn:active {
-            background: #34495e;
-            transform: scale(0.95);
-        }
+        .dpad-btn:active { background: #34495e; transform: scale(0.95); }
+        .dpad-btn.up { top: 0; left: 40px; border-radius: 8px 8px 0 0; }
+        .dpad-btn.down { bottom: 0; left: 40px; border-radius: 0 0 8px 8px; }
+        .dpad-btn.left { top: 40px; left: 0; border-radius: 8px 0 0 8px; }
+        .dpad-btn.right { top: 40px; right: 0; border-radius: 0 8px 8px 0; }
+        .dpad-btn.center { top: 40px; left: 40px; background: #1a252f; cursor: default; }
         
-        .dpad-btn.up { 
-            top: 0; 
-            left: 40px;
-            border-radius: 8px 8px 0 0;
-        }
-        .dpad-btn.down { 
-            bottom: 0; 
-            left: 40px;
-            border-radius: 0 0 8px 8px;
-        }
-        .dpad-btn.left { 
-            top: 40px; 
-            left: 0;
-            border-radius: 8px 0 0 8px;
-        }
-        .dpad-btn.right { 
-            top: 40px; 
-            right: 0;
-            border-radius: 0 8px 8px 0;
-        }
-        .dpad-btn.center {
-            top: 40px;
-            left: 40px;
-            background: #1a252f;
-            cursor: default;
-        }
-        
-        #button-container {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            pointer-events: all;
-        }
-        
-        #ab-buttons {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-        }
+        #button-container { display: flex; flex-direction: column; gap: 15px; pointer-events: all; }
+        #ab-buttons { display: flex; gap: 15px; align-items: center; }
         
         .game-btn {
             width: 65px;
@@ -136,22 +100,9 @@
             box-shadow: 0 4px 0 #a93226;
         }
         
-        .game-btn:active {
-            background: #c0392b;
-            transform: translateY(2px);
-            box-shadow: 0 2px 0 #a93226;
-        }
-        
-        .game-btn.b-btn {
-            background: #95a5a6;
-            border-color: #7f8c8d;
-            box-shadow: 0 4px 0 #6c7a7b;
-        }
-        
-        .game-btn.b-btn:active {
-            background: #7f8c8d;
-            box-shadow: 0 2px 0 #6c7a7b;
-        }
+        .game-btn:active { background: #c0392b; transform: translateY(2px); box-shadow: 0 2px 0 #a93226; }
+        .game-btn.b-btn { background: #95a5a6; border-color: #7f8c8d; box-shadow: 0 4px 0 #6c7a7b; }
+        .game-btn.b-btn:active { background: #7f8c8d; box-shadow: 0 2px 0 #6c7a7b; }
         
         .start-btn {
             width: 70px;
@@ -172,12 +123,8 @@
             margin: 0 auto;
         }
         
-        .start-btn:active {
-            background: #2c3e50;
-            transform: scale(0.95);
-        }
+        .start-btn:active { background: #2c3e50; transform: scale(0.95); }
         
-        /* Quote overlay */
         #quote-overlay {
             position: fixed;
             top: 0;
@@ -204,19 +151,8 @@
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
         }
         
-        #quote-text {
-            font-size: 14px;
-            line-height: 1.5;
-            color: #ecf0f1;
-            margin-bottom: 15px;
-        }
-        
-        #quote-author {
-            font-size: 12px;
-            color: #f39c12;
-            font-weight: bold;
-            margin-bottom: 20px;
-        }
+        #quote-text { font-size: 14px; line-height: 1.5; color: #ecf0f1; margin-bottom: 15px; }
+        #quote-author { font-size: 12px; color: #f39c12; font-weight: bold; margin-bottom: 20px; }
         
         #quote-continue {
             background: #f39c12;
@@ -230,29 +166,21 @@
             transition: all 0.2s;
         }
         
-        #quote-continue:active {
-            background: #e67e22;
-            transform: scale(0.95);
-        }
+        #quote-continue:active { background: #e67e22; transform: scale(0.95); }
         
         @media (max-width: 768px), (pointer: coarse) {
-            #gameboy-controls {
-                display: flex;
-            }
-            body {
-                padding: 10px 10px 180px 10px;
-            }
+            #gameboy-controls { display: flex; }
+            body { padding: 10px 10px 180px 10px; }
         }
     </style>
 </head>
 <body>
     <canvas id="game" width="512" height="384"></canvas>
     <div id="info">
-        <strong>Controls:</strong> WASD/Arrows to move | <strong>Battle:</strong> ↑↓ select, Enter/A confirm, Esc/B back<br>
+        <strong>Controls:</strong> WASD/Arrows to move | <strong>Battle:</strong> ↑↓ select, Enter/Z confirm, Esc/X back<br>
         <strong>Start/I:</strong> Open inventory | Defeat the Seven Deadly Sins!
     </div>
     
-    <!-- Game Boy Controls -->
     <div id="gameboy-controls">
         <div id="dpad-container">
             <div class="dpad-btn up" data-key="arrowup">▲</div>
@@ -270,7 +198,6 @@
         </div>
     </div>
     
-    <!-- Quote Overlay -->
     <div id="quote-overlay">
         <div id="quote-box">
             <div id="quote-text"></div>
@@ -280,7 +207,6 @@
     </div>
     
     <script>
-        // ===== CONSTANTS =====
         const canvas = document.getElementById('game');
         const ctx = canvas.getContext('2d');
         ctx.imageSmoothingEnabled = false;
@@ -292,41 +218,24 @@
         const MAP_WIDTH = 50;
         const MAP_HEIGHT = 40;
 
-        // ===== GAME STATE =====
-        let gameState = 'title'; // 'title', 'explore', 'battle', 'inventory'
+        let gameState = 'title';
         let hudMsg = '';
         let hudMsgTimer = 0;
         let dungeonLevel = 1;
 
-        // ===== BIBLE VERSES FOR TITLE SCREEN =====
         const titleScreenVerses = [
-            {
-                text: "Death has been swallowed up in victory. Where, O death, is your victory? Where, O death, is your sting?",
-                reference: "1 Corinthians 15:54-55"
-            },
-            {
-                text: "For the wages of sin is death, but the gift of God is eternal life in Christ Jesus our Lord.",
-                reference: "Romans 6:23"
-            },
-            {
-                text: "He will wipe every tear from their eyes. There will be no more death or mourning or crying or pain.",
-                reference: "Revelation 21:4"
-            },
-            {
-                text: "The last enemy to be destroyed is death. For he has put everything under his feet.",
-                reference: "1 Corinthians 15:26-27"
-            },
-            {
-                text: "Since the children have flesh and blood, he too shared in their humanity so that by his death he might break the power of him who holds the power of death—that is, the devil.",
-                reference: "Hebrews 2:14"
-            }
+            { text: "Death has been swallowed up in victory. Where, O death, is your victory? Where, O death, is your sting?", reference: "1 Corinthians 15:54-55" },
+            { text: "For the wages of sin is death, but the gift of God is eternal life in Christ Jesus our Lord.", reference: "Romans 6:23" },
+            { text: "He will wipe every tear from their eyes. There will be no more death or mourning or crying or pain.", reference: "Revelation 21:4" },
+            { text: "The last enemy to be destroyed is death. For he has put everything under his feet.", reference: "1 Corinthians 15:26-27" },
+            { text: "Since the children have flesh and blood, he too shared in their humanity so that by his death he might break the power of him who holds the power of death—that is, the devil.", reference: "Hebrews 2:14" }
         ];
         
         let currentVerseIndex = 0;
         let verseTimer = 0;
         const VERSE_DISPLAY_TIME = 6;
 
-        // ===== SPRITE GENERATION =====
+        // SPRITE GENERATION
         function createTileSprite(type) {
             const c = document.createElement('canvas');
             c.width = c.height = TILE_SIZE;
@@ -355,7 +264,6 @@
             const c = document.createElement('canvas');
             c.width = c.height = TILE_SIZE;
             const cx = c.getContext('2d');
-            
             cx.fillStyle = '#2c3e50';
             cx.fillRect(5, 8, 6, 7);
             cx.fillStyle = '#f0c291';
@@ -368,7 +276,89 @@
             cx.fillStyle = '#8d6e63';
             cx.fillRect(6, 14, 2, 2);
             cx.fillRect(8, 14, 2, 2);
-            
+            return c;
+        }
+
+        function createStMichaelSprite() {
+            const c = document.createElement('canvas');
+            c.width = c.height = TILE_SIZE;
+            const cx = c.getContext('2d');
+            cx.fillStyle = '#fff';
+            cx.fillRect(3, 7, 2, 4);
+            cx.fillRect(11, 7, 2, 4);
+            cx.fillStyle = '#3498db';
+            cx.fillRect(5, 8, 6, 7);
+            cx.fillStyle = '#f0c291';
+            cx.fillRect(6, 4, 4, 4);
+            cx.fillStyle = '#8B4513';
+            cx.fillRect(6, 3, 4, 1);
+            cx.fillStyle = '#000';
+            cx.fillRect(7, 5, 1, 1);
+            cx.fillRect(9, 5, 1, 1);
+            cx.strokeStyle = '#f39c12';
+            cx.lineWidth = 1;
+            cx.beginPath();
+            cx.arc(8, 2, 3, 0, Math.PI * 2);
+            cx.stroke();
+            cx.fillStyle = '#95a5a6';
+            cx.fillRect(11, 10, 2, 5);
+            cx.fillStyle = '#e74c3c';
+            cx.fillRect(2, 9, 3, 4);
+            cx.fillStyle = '#f39c12';
+            cx.fillRect(3, 10, 1, 2);
+            cx.fillStyle = '#2c3e50';
+            cx.fillRect(6, 14, 2, 2);
+            cx.fillRect(8, 14, 2, 2);
+            return c;
+        }
+
+        function createStJoanSprite() {
+            const c = document.createElement('canvas');
+            c.width = c.height = TILE_SIZE;
+            const cx = c.getContext('2d');
+            cx.fillStyle = '#95a5a6';
+            cx.fillRect(5, 8, 6, 7);
+            cx.fillStyle = '#bdc3c7';
+            cx.fillRect(6, 9, 1, 3);
+            cx.fillStyle = '#f0c291';
+            cx.fillRect(6, 4, 4, 4);
+            cx.fillStyle = '#8B4513';
+            cx.fillRect(6, 3, 4, 2);
+            cx.fillStyle = '#000';
+            cx.fillRect(7, 5, 1, 1);
+            cx.fillRect(9, 5, 1, 1);
+            cx.fillStyle = '#8B4513';
+            cx.fillRect(11, 6, 1, 10);
+            cx.fillStyle = '#e74c3c';
+            cx.fillRect(11, 5, 2, 2);
+            cx.fillStyle = '#7f8c8d';
+            cx.fillRect(6, 14, 2, 2);
+            cx.fillRect(8, 14, 2, 2);
+            return c;
+        }
+
+        function createStVincentSprite() {
+            const c = document.createElement('canvas');
+            c.width = c.height = TILE_SIZE;
+            const cx = c.getContext('2d');
+            cx.fillStyle = '#000';
+            cx.fillRect(4, 8, 8, 7);
+            cx.fillStyle = '#f5f5f5';
+            cx.fillRect(5, 9, 6, 6);
+            cx.fillStyle = '#f0c291';
+            cx.fillRect(6, 4, 4, 4);
+            cx.fillStyle = '#5D4037';
+            cx.fillRect(6, 3, 4, 1);
+            cx.fillRect(6, 3, 1, 2);
+            cx.fillRect(9, 3, 1, 2);
+            cx.fillStyle = '#000';
+            cx.fillRect(7, 5, 1, 1);
+            cx.fillRect(9, 5, 1, 1);
+            cx.fillStyle = '#8B4513';
+            cx.fillRect(3, 4, 1, 11);
+            cx.fillRect(2, 4, 2, 1);
+            cx.fillRect(6, 14, 2, 2);
+            cx.fillRect(8, 14, 2, 2);
             return c;
         }
 
@@ -376,7 +366,6 @@
             const c = document.createElement('canvas');
             c.width = c.height = TILE_SIZE;
             const cx = c.getContext('2d');
-            
             cx.fillStyle = '#e74c3c';
             cx.fillRect(6, 8, 4, 6);
             cx.fillStyle = '#8b6f47';
@@ -387,7 +376,198 @@
             cx.fillStyle = '#34495e';
             cx.fillRect(6, 14, 2, 2);
             cx.fillRect(8, 14, 2, 2);
-            
+            return c;
+        }
+
+        function createDevilSprite() {
+            const c = document.createElement('canvas');
+            c.width = c.height = TILE_SIZE;
+            const cx = c.getContext('2d');
+            cx.fillStyle = '#8B0000';
+            cx.fillRect(5, 8, 6, 7);
+            cx.fillStyle = '#CD0000';
+            cx.fillRect(6, 4, 4, 4);
+            cx.fillStyle = '#4a0000';
+            cx.fillRect(5, 3, 2, 2);
+            cx.fillRect(9, 3, 2, 2);
+            cx.fillStyle = '#ff0';
+            cx.fillRect(7, 5, 1, 1);
+            cx.fillRect(9, 5, 1, 1);
+            cx.fillStyle = '#8B0000';
+            cx.fillRect(11, 10, 1, 3);
+            cx.fillRect(12, 12, 1, 2);
+            cx.fillStyle = '#000';
+            cx.fillRect(6, 14, 2, 2);
+            cx.fillRect(8, 14, 2, 2);
+            return c;
+        }
+
+        function createPrideSprite() {
+            const c = document.createElement('canvas');
+            c.width = c.height = TILE_SIZE;
+            const cx = c.getContext('2d');
+            cx.fillStyle = '#9b59b6';
+            cx.fillRect(5, 8, 6, 7);
+            cx.fillStyle = '#f0c291';
+            cx.fillRect(6, 4, 4, 4);
+            cx.fillStyle = '#f39c12';
+            cx.fillRect(5, 2, 6, 2);
+            cx.fillRect(6, 1, 1, 1);
+            cx.fillRect(8, 1, 1, 1);
+            cx.fillRect(10, 1, 1, 1);
+            cx.fillStyle = '#000';
+            cx.fillRect(7, 5, 1, 1);
+            cx.fillRect(9, 5, 1, 1);
+            cx.fillStyle = '#8e44ad';
+            cx.fillRect(6, 14, 2, 2);
+            cx.fillRect(8, 14, 2, 2);
+            return c;
+        }
+
+        function createGreedSprite() {
+            const c = document.createElement('canvas');
+            c.width = c.height = TILE_SIZE;
+            const cx = c.getContext('2d');
+            cx.fillStyle = '#f39c12';
+            cx.fillRect(5, 8, 6, 7);
+            cx.fillStyle = '#f0c291';
+            cx.fillRect(6, 4, 4, 4);
+            cx.fillStyle = '#000';
+            cx.fillRect(7, 5, 1, 1);
+            cx.fillRect(9, 5, 1, 1);
+            cx.fillStyle = '#8B4513';
+            cx.fillRect(3, 9, 3, 4);
+            cx.fillStyle = '#f39c12';
+            cx.fillRect(3, 10, 1, 1);
+            cx.fillRect(4, 11, 1, 1);
+            cx.fillStyle = '#d68910';
+            cx.fillRect(6, 14, 2, 2);
+            cx.fillRect(8, 14, 2, 2);
+            return c;
+        }
+
+        function createLustSprite() {
+            const c = document.createElement('canvas');
+            c.width = c.height = TILE_SIZE;
+            const cx = c.getContext('2d');
+            cx.fillStyle = '#e91e63';
+            cx.fillRect(5, 8, 6, 7);
+            cx.fillStyle = '#f0c291';
+            cx.fillRect(6, 4, 4, 4);
+            cx.fillStyle = '#ad1457';
+            cx.fillRect(6, 3, 4, 1);
+            cx.fillStyle = '#000';
+            cx.fillRect(7, 5, 1, 1);
+            cx.fillRect(9, 5, 1, 1);
+            cx.fillStyle = '#ff1744';
+            cx.fillRect(3, 10, 2, 1);
+            cx.fillRect(2, 11, 1, 1);
+            cx.fillRect(4, 11, 1, 1);
+            cx.fillRect(2, 12, 3, 1);
+            cx.fillStyle = '#c2185b';
+            cx.fillRect(6, 14, 2, 2);
+            cx.fillRect(8, 14, 2, 2);
+            return c;
+        }
+
+        function createEnvySprite() {
+            const c = document.createElement('canvas');
+            c.width = c.height = TILE_SIZE;
+            const cx = c.getContext('2d');
+            cx.fillStyle = '#27ae60';
+            cx.fillRect(5, 8, 6, 7);
+            cx.fillStyle = '#8BC34A';
+            cx.fillRect(6, 4, 4, 4);
+            cx.fillStyle = '#1e8449';
+            cx.fillRect(6, 3, 4, 1);
+            cx.fillStyle = '#ff0';
+            cx.fillRect(7, 5, 1, 1);
+            cx.fillRect(9, 5, 1, 1);
+            cx.fillStyle = '#1e8449';
+            cx.fillRect(6, 14, 2, 2);
+            cx.fillRect(8, 14, 2, 2);
+            return c;
+        }
+
+        function createGluttonySprite() {
+            const c = document.createElement('canvas');
+            c.width = c.height = TILE_SIZE;
+            const cx = c.getContext('2d');
+            cx.fillStyle = '#e67e22';
+            cx.fillRect(4, 8, 8, 7);
+            cx.fillStyle = '#f0c291';
+            cx.fillRect(6, 4, 4, 4);
+            cx.fillStyle = '#d35400';
+            cx.fillRect(6, 3, 4, 1);
+            cx.fillStyle = '#000';
+            cx.fillRect(7, 5, 1, 1);
+            cx.fillRect(9, 5, 1, 1);
+            cx.fillRect(7, 7, 2, 1);
+            cx.fillStyle = '#ca6f1e';
+            cx.fillRect(6, 14, 2, 2);
+            cx.fillRect(8, 14, 2, 2);
+            return c;
+        }
+
+        function createWrathSprite() {
+            const c = document.createElement('canvas');
+            c.width = c.height = TILE_SIZE;
+            const cx = c.getContext('2d');
+            cx.fillStyle = '#c0392b';
+            cx.fillRect(5, 8, 6, 7);
+            cx.fillStyle = '#e74c3c';
+            cx.fillRect(6, 4, 4, 4);
+            cx.fillStyle = '#922b21';
+            cx.fillRect(6, 3, 4, 1);
+            cx.fillStyle = '#ff0';
+            cx.fillRect(7, 5, 1, 1);
+            cx.fillRect(9, 5, 1, 1);
+            cx.fillStyle = '#000';
+            cx.fillRect(7, 4, 1, 1);
+            cx.fillRect(9, 4, 1, 1);
+            cx.fillStyle = '#a93226';
+            cx.fillRect(6, 14, 2, 2);
+            cx.fillRect(8, 14, 2, 2);
+            return c;
+        }
+
+        function createSlothSprite() {
+            const c = document.createElement('canvas');
+            c.width = c.height = TILE_SIZE;
+            const cx = c.getContext('2d');
+            cx.fillStyle = '#95a5a6';
+            cx.fillRect(5, 9, 6, 6);
+            cx.fillStyle = '#bdc3c7';
+            cx.fillRect(6, 5, 4, 4);
+            cx.fillStyle = '#7f8c8d';
+            cx.fillRect(6, 4, 4, 1);
+            cx.fillStyle = '#000';
+            cx.fillRect(7, 6, 1, 1);
+            cx.fillRect(9, 6, 1, 1);
+            cx.fillRect(7, 7, 2, 1);
+            cx.fillStyle = '#7f8c8d';
+            cx.fillRect(6, 14, 2, 2);
+            cx.fillRect(8, 14, 2, 2);
+            return c;
+        }
+
+        function createDemonSprite() {
+            const c = document.createElement('canvas');
+            c.width = c.height = TILE_SIZE;
+            const cx = c.getContext('2d');
+            cx.fillStyle = '#8B0000';
+            cx.fillRect(6, 8, 4, 6);
+            cx.fillStyle = '#CD0000';
+            cx.fillRect(6, 4, 4, 4);
+            cx.fillStyle = '#4a0000';
+            cx.fillRect(6, 3, 1, 1);
+            cx.fillRect(9, 3, 1, 1);
+            cx.fillStyle = '#ff0';
+            cx.fillRect(7, 5, 1, 1);
+            cx.fillRect(9, 5, 1, 1);
+            cx.fillStyle = '#000';
+            cx.fillRect(6, 14, 2, 2);
+            cx.fillRect(8, 14, 2, 2);
             return c;
         }
 
@@ -421,13 +601,85 @@
             floors: Array(10).fill().map(() => createTileSprite('floor')),
             walls: Array(10).fill().map(() => createTileSprite('wall')),
             player: createPlayerSprite(),
+            stMichael: createStMichaelSprite(),
+            stJoan: createStJoanSprite(),
+            stVincent: createStVincentSprite(),
             enemy: createEnemySprite(),
+            devil: createDevilSprite(),
+            pride: createPrideSprite(),
+            greed: createGreedSprite(),
+            lust: createLustSprite(),
+            envy: createEnvySprite(),
+            gluttony: createGluttonySprite(),
+            wrath: createWrathSprite(),
+            sloth: createSlothSprite(),
+            demon: createDemonSprite(),
             holyWater: createItemSprite('holyWater'),
             rosary: createItemSprite('rosary'),
             gold: createItemSprite('gold')
         };
 
-        // ===== MAP & DUNGEON GEN =====
+        // BATTLE BACKGROUNDS
+        const battleBackgrounds = { grass: null, desert: null, dungeon: null };
+
+        function createBattleBackground(type) {
+            const c = document.createElement('canvas');
+            c.width = VIEW_WIDTH;
+            c.height = VIEW_HEIGHT;
+            const cx = c.getContext('2d');
+            
+            if (type === 'grass') {
+                const gradient = cx.createLinearGradient(0, 0, 0, VIEW_HEIGHT);
+                gradient.addColorStop(0, '#87CEEB');
+                gradient.addColorStop(0.6, '#98D8E8');
+                gradient.addColorStop(0.6, '#5D8C3E');
+                gradient.addColorStop(1, '#4A7C2F');
+                cx.fillStyle = gradient;
+                cx.fillRect(0, 0, VIEW_WIDTH, VIEW_HEIGHT);
+                cx.fillStyle = 'rgba(74, 124, 47, 0.5)';
+                for (let i = 0; i < 100; i++) {
+                    const x = Math.random() * VIEW_WIDTH;
+                    const y = VIEW_HEIGHT * 0.6 + Math.random() * VIEW_HEIGHT * 0.4;
+                    cx.fillRect(x, y, 2, 3);
+                }
+            } else if (type === 'desert') {
+                const gradient = cx.createLinearGradient(0, 0, 0, VIEW_HEIGHT);
+                gradient.addColorStop(0, '#FFE4B5');
+                gradient.addColorStop(0.5, '#F4D7B5');
+                gradient.addColorStop(0.5, '#E6C89E');
+                gradient.addColorStop(1, '#D4B896');
+                cx.fillStyle = gradient;
+                cx.fillRect(0, 0, VIEW_WIDTH, VIEW_HEIGHT);
+                cx.fillStyle = 'rgba(194, 168, 136, 0.4)';
+                cx.beginPath();
+                cx.arc(VIEW_WIDTH * 0.3, VIEW_HEIGHT * 0.7, 60, 0, Math.PI, true);
+                cx.fill();
+                cx.beginPath();
+                cx.arc(VIEW_WIDTH * 0.7, VIEW_HEIGHT * 0.75, 50, 0, Math.PI, true);
+                cx.fill();
+            } else if (type === 'dungeon') {
+                const gradient = cx.createLinearGradient(0, 0, 0, VIEW_HEIGHT);
+                gradient.addColorStop(0, '#1a1a2e');
+                gradient.addColorStop(0.5, '#2c2c3e');
+                gradient.addColorStop(1, '#3a3a4e');
+                cx.fillStyle = gradient;
+                cx.fillRect(0, 0, VIEW_WIDTH, VIEW_HEIGHT);
+                cx.fillStyle = 'rgba(60, 60, 70, 0.5)';
+                for (let i = 0; i < 50; i++) {
+                    const x = Math.random() * VIEW_WIDTH;
+                    const y = VIEW_HEIGHT * 0.6 + Math.random() * VIEW_HEIGHT * 0.4;
+                    cx.fillRect(x, y, 4, 4);
+                }
+            }
+            
+            return c;
+        }
+
+        battleBackgrounds.grass = createBattleBackground('grass');
+        battleBackgrounds.desert = createBattleBackground('desert');
+        battleBackgrounds.dungeon = createBattleBackground('dungeon');
+
+        // MAP & DUNGEON
         const map = Array(MAP_HEIGHT).fill().map(() => Array(MAP_WIDTH).fill(0));
 
         function generateDungeon(spawnDevilBoss = false) {
@@ -449,8 +701,7 @@
 
                 let valid = true;
                 for (let r of rooms) {
-                    if (x < r.x + r.w + 2 && x + w + 2 > r.x &&
-                        y < r.y + r.h + 2 && y + h + 2 > r.y) {
+                    if (x < r.x + r.w + 2 && x + w + 2 > r.x && y < r.y + r.h + 2 && y + h + 2 > r.y) {
                         valid = false;
                         break;
                     }
@@ -490,7 +741,7 @@
             pickups.length = 0;
 
             let enemyCount = 0;
-            const minEnemies = 2;
+            const minEnemies = spawnDevilBoss ? 1 : 2;
 
             for (let i = 1; i < rooms.length; i++) {
                 const room = rooms[i];
@@ -504,20 +755,19 @@
                         const availableVices = VICES.filter(v => 
                             !DEADLY_SINS.includes(v.name) || !defeatedSins.has(v.name)
                         );
+                        if (availableVices.length === 0) continue;
                         const viceIndex = Math.floor(Math.random() * availableVices.length);
                         vice = availableVices[viceIndex];
                     }
                     
-                    const ex = (room.x + 1 + Math.random() * (room.w - 2)) * TILE_SIZE;
-                    const ey = (room.y + 1 + Math.random() * (room.h - 2)) * TILE_SIZE;
-                    enemies.push({
-                        x: ex,
-                        y: ey,
-                        vx: 0,
-                        vy: 0,
-                        speed: 30 + dungeonLevel * 5,
-                        vice: vice
-                    });
+                    let ex, ey, attempts = 0;
+                    do {
+                        ex = Math.floor(room.x + 1 + Math.random() * (room.w - 2)) * TILE_SIZE;
+                        ey = Math.floor(room.y + 1 + Math.random() * (room.h - 2)) * TILE_SIZE;
+                        attempts++;
+                    } while (collides(ex, ey) && attempts < 20);
+                    
+                    enemies.push({ x: ex, y: ey, vx: 0, vy: 0, speed: 3 + dungeonLevel * 0.5, vice: vice });
                     enemyCount++;
                 }
                 
@@ -537,14 +787,7 @@
             }
         }
 
-        // ===== ENTITIES =====
-        const player = {
-            x: TILE_SIZE * 5,
-            y: TILE_SIZE * 5,
-            vx: 0,
-            vy: 0,
-            speed: 80
-        };
+        const player = { x: TILE_SIZE * 5, y: TILE_SIZE * 5, vx: 0, vy: 0, speed: 80 };
 
         let enemies = [];
         let pickups = [];
@@ -555,10 +798,20 @@
             gold: 0,
             atkBoost: 0,
             defBoost: 0,
-            hpBoost: 0
+            hpBoost: 0,
+            virtueItems: []
         };
 
-        // ===== VICES AND CATECHISM =====
+        const VIRTUE_ITEMS = {
+            "Pride": { name: "Cloak of Humility", effect: "DEF +5", defBoost: 5 },
+            "Lust": { name: "Chastity Belt Armor", effect: "HP +50", hpBoost: 50 },
+            "Wrath": { name: "Shield of Patience", effect: "DEF +10", defBoost: 10 },
+            "Greed": { name: "Sword of Charity", effect: "ATK +8", atkBoost: 8 },
+            "Envy": { name: "Boots of Kindness", effect: "SPD +2", spdBoost: 2 },
+            "Gluttony": { name: "Ring of Temperance", effect: "HP +30", hpBoost: 30 },
+            "Sloth": { name: "Gauntlets of Diligence", effect: "ATK +5", atkBoost: 5 }
+        };
+
         const DEADLY_SINS = ['Pride', 'Greed', 'Lust', 'Envy', 'Gluttony', 'Wrath', 'Sloth'];
         let defeatedSins = new Set();
         
@@ -571,111 +824,48 @@
         };
         
         const VICES = [
-            {
-                name: "Pride",
-                minion: "Arrogance",
-                catechism: "Pride is excessive love of one's own excellence. It is contrary to the virtue of humility and was the sin of Lucifer. The Church teaches that pride is the beginning of all sin.",
-                verse: "Pride goes before destruction, a haughty spirit before a fall.",
-                reference: "Proverbs 16:18"
-            },
-            {
-                name: "Greed",
-                minion: "Avarice",
-                catechism: "Greed is the immoderate desire for earthly goods and the power they bring. The Catechism warns against making money an idol and teaches us to trust in God's providence.",
-                verse: "The love of money is a root of all kinds of evil. Some people, eager for money, have wandered from the faith.",
-                reference: "1 Timothy 6:10"
-            },
-            {
-                name: "Lust",
-                minion: "Desire",
-                catechism: "Lust is disordered desire for sexual pleasure isolated from its unitive and procreative purposes. The Church calls us to chastity and purity of heart.",
-                verse: "Flee from sexual immorality. All other sins a person commits are outside the body, but whoever sins sexually, sins against their own body.",
-                reference: "1 Corinthians 6:18"
-            },
-            {
-                name: "Envy",
-                minion: "Jealousy",
-                catechism: "Envy is sadness at another's good fortune and the immoderate desire to acquire goods for oneself. It is contrary to the tenth commandment and leads to malice.",
-                verse: "A heart at peace gives life to the body, but envy rots the bones.",
-                reference: "Proverbs 14:30"
-            },
-            {
-                name: "Gluttony",
-                minion: "Excess",
-                catechism: "Gluttony is the immoderate desire for the pleasure of eating and drinking. The Church teaches moderation and self-control as fruits of the Holy Spirit.",
-                verse: "Do not join those who drink too much wine or gorge themselves on meat, for drunkards and gluttons become poor.",
-                reference: "Proverbs 23:20-21"
-            },
-            {
-                name: "Wrath",
-                minion: "Rage",
-                catechism: "Anger becomes the sin of wrath when it is disproportionate to the offense and when it seeks revenge rather than justice. We are called to forgive as Christ forgave us.",
-                verse: "Get rid of all bitterness, rage and anger, brawling and slander, along with every form of malice.",
-                reference: "Ephesians 4:31"
-            },
-            {
-                name: "Sloth",
-                minion: "Apathy",
-                catechism: "Sloth is spiritual laziness and neglect of divine grace. It shows itself in reluctance toward prayer, the sacraments, and works of charity.",
-                verse: "The sluggard's craving will be the death of him, because his hands refuse to work.",
-                reference: "Proverbs 21:25"
-            }
+            { name: "Pride", minion: "Arrogance", catechism: "Pride is excessive love of one's own excellence. It is contrary to the virtue of humility and was the sin of Lucifer. The Church teaches that pride is the beginning of all sin.", verse: "Pride goes before destruction, a haughty spirit before a fall.", reference: "Proverbs 16:18" },
+            { name: "Greed", minion: "Avarice", catechism: "Greed is the immoderate desire for earthly goods and the power they bring. The Catechism warns against making money an idol and teaches us to trust in God's providence.", verse: "The love of money is a root of all kinds of evil. Some people, eager for money, have wandered from the faith.", reference: "1 Timothy 6:10" },
+            { name: "Lust", minion: "Desire", catechism: "Lust is disordered desire for sexual pleasure isolated from its unitive and procreative purposes. The Church calls us to chastity and purity of heart.", verse: "Flee from sexual immorality. All other sins a person commits are outside the body, but whoever sins sexually, sins against their own body.", reference: "1 Corinthians 6:18" },
+            { name: "Envy", minion: "Jealousy", catechism: "Envy is sadness at another's good fortune and the immoderate desire to acquire goods for oneself. It is contrary to the tenth commandment and leads to malice.", verse: "A heart at peace gives life to the body, but envy rots the bones.", reference: "Proverbs 14:30" },
+            { name: "Gluttony", minion: "Excess", catechism: "Gluttony is the immoderate desire for the pleasure of eating and drinking. The Church teaches moderation and self-control as fruits of the Holy Spirit.", verse: "Do not join those who drink too much wine or gorge themselves on meat, for drunkards and gluttons become poor.", reference: "Proverbs 23:20-21" },
+            { name: "Wrath", minion: "Rage", catechism: "Anger becomes the sin of wrath when it is disproportionate to the offense and when it seeks revenge rather than justice. We are called to forgive as Christ forgave us.", verse: "Get rid of all bitterness, rage and anger, brawling and slander, along with every form of malice.", reference: "Ephesians 4:31" },
+            { name: "Sloth", minion: "Apathy", catechism: "Sloth is spiritual laziness and neglect of divine grace. It shows itself in reluctance toward prayer, the sacraments, and works of charity.", verse: "The sluggard's craving will be the death of him, because his hands refuse to work.", reference: "Proverbs 21:25" }
         ];
 
-        // ===== HEROES =====
         const heroes = [
-            {
-                name: "St. Vincent",
-                hp: 100,
-                maxHp: 100,
-                mp: 30,
-                maxMp: 30,
-                atk: 15,
-                def: 8,
-                color: '#9b59b6'
-            },
-            {
-                name: "St. Michael",
-                hp: 120,
-                maxHp: 120,
-                mp: 25,
-                maxMp: 25,
-                atk: 18,
-                def: 6,
-                color: '#3498db'
-            },
-            {
-                name: "St. Joan",
-                hp: 110,
-                maxHp: 110,
-                mp: 35,
-                maxMp: 35,
-                atk: 14,
-                def: 10,
-                color: '#e74c3c'
-            }
+            { name: "St. Vincent", hp: 100, maxHp: 100, mp: 30, maxMp: 30, atk: 15, def: 8, color: '#9b59b6' },
+            { name: "St. Michael", hp: 120, maxHp: 120, mp: 25, maxMp: 25, atk: 18, def: 6, color: '#3498db' },
+            { name: "St. Joan", hp: 110, maxHp: 110, mp: 35, maxMp: 35, atk: 14, def: 10, color: '#e74c3c' }
         ];
 
-        // ===== BATTLE SYSTEM =====
         const battle = {
             enemies: [],
             currentHeroIndex: 0,
             menuSelection: 0,
             targetSelection: 0,
             itemSelection: 0,
-            phase: 'menu', // 'menu', 'target', 'item', 'executing', 'enemyTurn'
+            phase: 'menu',
             log: [],
             shake: 0,
-            flash: 0
+            flash: 0,
+            isProcessing: false
         };
 
-        const BATTLE_ACTIONS = ['Attack', 'Holy Magic', 'Item', 'Flee'];
+        const BATTLE_ACTIONS = ['Attack', 'Prayer', 'Item', 'Flee'];
         const ITEM_ACTIONS = ['Holy Water', 'Rosary', 'Back'];
 
         function startBattle(enemyObj) {
             gameState = 'battle';
+            battle.isProcessing = false;
             
             const isFinalBoss = enemyObj.vice && enemyObj.vice.name === "The Devil";
+            
+            if (isFinalBoss && inventory.virtueItems.length === 7) {
+                // Jesus uses the One Ring - instant win
+                showOneRingVictory();
+                return;
+            }
             
             heroes.forEach(hero => {
                 hero.hp = hero.maxHp + inventory.hpBoost;
@@ -699,24 +889,8 @@
             }
             
             battle.enemies = [
-                {
-                    name: enemyObj.vice.name,
-                    hp: viceHp,
-                    maxHp: viceHp,
-                    atk: viceAtk,
-                    def: 4,
-                    isMinion: false,
-                    vice: enemyObj.vice
-                },
-                {
-                    name: enemyObj.vice.minion,
-                    hp: minionHp,
-                    maxHp: minionHp,
-                    atk: minionAtk,
-                    def: 2,
-                    isMinion: true,
-                    vice: enemyObj.vice
-                }
+                { name: enemyObj.vice.name, hp: viceHp, maxHp: viceHp, atk: viceAtk, def: 4, isMinion: false, vice: enemyObj.vice },
+                { name: enemyObj.vice.minion, hp: minionHp, maxHp: minionHp, atk: minionAtk, def: 2, isMinion: true, vice: enemyObj.vice }
             ];
             
             battle.currentHeroIndex = 0;
@@ -729,16 +903,65 @@
             battle.flash = 0;
         }
 
+        function showOneRingVictory() {
+            document.getElementById('quote-text').innerHTML = `
+                <div style="color: #f1c40f; font-size: 20px; font-weight: bold; margin-bottom: 12px;">
+                    ⚡ THE ONE RING TO RULE THEM ALL! ⚡
+                </div>
+                <div style="color: #2ecc71; font-size: 15px; margin-bottom: 12px;">
+                    Jesus Christ puts on the One Ring!<br>
+                    Divine power destroys all evil instantly!
+                </div>
+                <div style="color: #e74c3c; font-size: 14px; margin-bottom: 12px;">
+                    The Devil and all demons are vanquished in a single blow!
+                </div>
+                <div style="color: #ecf0f1; font-size: 12px; font-style: italic; line-height: 1.4; margin-bottom: 8px;">
+                    "For I am convinced that neither death nor life, neither angels nor demons, 
+                    nor anything else in all creation, will be able to separate us from the love 
+                    of God that is in Christ Jesus our Lord."
+                </div>
+                <div style="color: #f39c12; font-size: 11px; font-weight: bold;">
+                    — Romans 8:38-39
+                </div>
+            `;
+            
+            document.getElementById('quote-author').textContent = '';
+            document.getElementById('quote-continue').textContent = 'New Game';
+            document.getElementById('quote-overlay').style.display = 'flex';
+            
+            const continueBtn = document.getElementById('quote-continue');
+            const handleContinue = () => {
+                document.getElementById('quote-overlay').style.display = 'none';
+                continueBtn.removeEventListener('click', handleContinue);
+                continueBtn.removeEventListener('touchend', handleContinue);
+                dungeonLevel = 1;
+                defeatedSins.clear();
+                inventory.holyWater = 3;
+                inventory.rosaries = 2;
+                inventory.gold = 0;
+                inventory.atkBoost = 0;
+                inventory.defBoost = 0;
+                inventory.hpBoost = 0;
+                inventory.virtueItems = [];
+                generateDungeon();
+                gameState = 'explore';
+            };
+            
+            continueBtn.addEventListener('click', handleContinue);
+            continueBtn.addEventListener('touchend', handleContinue);
+        }
+
         function findNextAliveEnemy() {
             for (let i = 0; i < battle.enemies.length; i++) {
-                if (battle.enemies[i].hp > 0) {
-                    return i;
-                }
+                if (battle.enemies[i].hp > 0) return i;
             }
             return 0;
         }
 
         function executeBattleAction() {
+            if (battle.isProcessing) return;
+            battle.isProcessing = true;
+            
             const hero = heroes[battle.currentHeroIndex];
             const action = BATTLE_ACTIONS[battle.menuSelection];
             
@@ -751,14 +974,14 @@
                     battle.flash = 15;
                     battle.shake = 8;
                 }
-            } else if (action === 'Holy Magic') {
+            } else if (action === 'Prayer') {
                 if (hero.mp >= 10) {
                     const target = battle.enemies[battle.targetSelection];
                     if (target.hp > 0) {
                         const damage = Math.floor(hero.atk * 1.5) + Math.floor(Math.random() * 8);
                         target.hp -= damage;
                         hero.mp -= 10;
-                        battle.log.unshift(`${hero.name} casts Holy Magic for ${damage} damage!`);
+                        battle.log.unshift(`${hero.name} prays for ${damage} holy damage!`);
                         battle.flash = 20;
                         battle.shake = 10;
                     }
@@ -769,6 +992,7 @@
                 if (Math.random() < 0.6) {
                     battle.log.unshift('Got away safely!');
                     setTimeout(() => {
+                        battle.isProcessing = false;
                         gameState = 'explore';
                     }, 1000);
                     return;
@@ -780,21 +1004,31 @@
             if (battle.log.length > 5) battle.log.pop();
             
             checkBattleEnd();
-            if (gameState !== 'battle') return;
+            if (gameState !== 'battle') {
+                battle.isProcessing = false;
+                return;
+            }
             
             battle.currentHeroIndex++;
             if (battle.currentHeroIndex >= heroes.length) {
                 battle.phase = 'enemyTurn';
-                setTimeout(executeEnemyTurn, 800);
+                setTimeout(() => {
+                    executeEnemyTurn();
+                }, 800);
             } else {
                 battle.phase = 'menu';
                 battle.menuSelection = 0;
                 battle.targetSelection = findNextAliveEnemy();
                 battle.log.unshift(`${heroes[battle.currentHeroIndex].name}'s turn!`);
+                if (battle.log.length > 5) battle.log.pop();
+                battle.isProcessing = false;
             }
         }
 
         function useItem() {
+            if (battle.isProcessing) return;
+            battle.isProcessing = true;
+            
             const hero = heroes[battle.currentHeroIndex];
             const item = ITEM_ACTIONS[battle.itemSelection];
             
@@ -805,6 +1039,7 @@
                     battle.log.unshift(`${hero.name} drinks Holy Water! +50 HP`);
                 } else {
                     battle.log.unshift('No Holy Water!');
+                    battle.isProcessing = false;
                     return;
                 }
             } else if (item === 'Rosary') {
@@ -821,6 +1056,7 @@
                     battle.shake = 12;
                 } else {
                     battle.log.unshift('No Rosary!');
+                    battle.isProcessing = false;
                     return;
                 }
             }
@@ -828,18 +1064,25 @@
             if (battle.log.length > 5) battle.log.pop();
             
             checkBattleEnd();
-            if (gameState !== 'battle') return;
+            if (gameState !== 'battle') {
+                battle.isProcessing = false;
+                return;
+            }
             
             battle.currentHeroIndex++;
             if (battle.currentHeroIndex >= heroes.length) {
                 battle.phase = 'enemyTurn';
-                setTimeout(executeEnemyTurn, 800);
+                setTimeout(() => {
+                    executeEnemyTurn();
+                }, 800);
             } else {
                 battle.phase = 'menu';
                 battle.menuSelection = 0;
                 battle.itemSelection = 0;
                 battle.targetSelection = findNextAliveEnemy();
                 battle.log.unshift(`${heroes[battle.currentHeroIndex].name}'s turn!`);
+                if (battle.log.length > 5) battle.log.pop();
+                battle.isProcessing = false;
             }
         }
 
@@ -854,42 +1097,44 @@
             let enemyIndex = 0;
             
             function processNextEnemy() {
-                while (enemyIndex < aliveEnemies.length) {
-                    const enemy = aliveEnemies[enemyIndex];
-                    const aliveHeroes = heroes.filter(h => h.hp > 0);
-                    
-                    if (aliveHeroes.length === 0) {
-                        checkBattleEnd();
-                        return;
-                    }
-                    
-                    const target = aliveHeroes[Math.floor(Math.random() * aliveHeroes.length)];
-                    const damage = Math.max(1, enemy.atk - target.def + Math.floor(Math.random() * 5));
-                    target.hp -= damage;
-                    
-                    battle.log.unshift(`${enemy.name} attacks ${target.name} for ${damage} damage!`);
-                    if (battle.log.length > 5) battle.log.pop();
-                    
-                    battle.shake = 6;
-                    battle.flash = 10;
-                    
-                    enemyIndex++;
-                    
-                    if (enemyIndex < aliveEnemies.length) {
-                        setTimeout(processNextEnemy, 1000);
-                        return;
-                    } else {
-                        checkBattleEnd();
-                        if (gameState === 'battle') {
-                            battle.currentHeroIndex = 0;
-                            battle.phase = 'menu';
-                            battle.menuSelection = 0;
-                            battle.targetSelection = findNextAliveEnemy();
-                            battle.log.unshift(`${heroes[0].name}'s turn!`);
-                        }
-                        return;
-                    }
+                if (gameState !== 'battle' || battle.phase !== 'enemyTurn') {
+                    return;
                 }
+                
+                if (enemyIndex >= aliveEnemies.length) {
+                    checkBattleEnd();
+                    if (gameState === 'battle') {
+                        battle.currentHeroIndex = 0;
+                        battle.phase = 'menu';
+                        battle.menuSelection = 0;
+                        battle.targetSelection = findNextAliveEnemy();
+                        battle.log.unshift(`${heroes[0].name}'s turn!`);
+                        if (battle.log.length > 5) battle.log.pop();
+                        battle.isProcessing = false;
+                    }
+                    return;
+                }
+                
+                const enemy = aliveEnemies[enemyIndex];
+                const aliveHeroes = heroes.filter(h => h.hp > 0);
+                
+                if (aliveHeroes.length === 0) {
+                    checkBattleEnd();
+                    return;
+                }
+                
+                const target = aliveHeroes[Math.floor(Math.random() * aliveHeroes.length)];
+                const damage = Math.max(1, enemy.atk - target.def + Math.floor(Math.random() * 5));
+                target.hp -= damage;
+                
+                battle.log.unshift(`${enemy.name} attacks ${target.name} for ${damage} damage!`);
+                if (battle.log.length > 5) battle.log.pop();
+                
+                battle.shake = 6;
+                battle.flash = 10;
+                
+                enemyIndex++;
+                setTimeout(processNextEnemy, 1000);
             }
             
             processNextEnemy();
@@ -906,26 +1151,46 @@
         }
 
         function endBattle(won) {
+            battle.isProcessing = false;
+            
             if (won) {
                 enemies = enemies.filter(e => e.vice !== battle.enemies[0].vice);
                 
-                if (battle.enemies[0].vice.name === "The Devil") {
+                const viceName = battle.enemies[0].vice.name;
+                
+                // Award virtue item if defeating a deadly sin
+                if (DEADLY_SINS.includes(viceName) && !inventory.virtueItems.includes(viceName)) {
+                    const virtueItem = VIRTUE_ITEMS[viceName];
+                    inventory.virtueItems.push(viceName);
+                    
+                    if (virtueItem.atkBoost) inventory.atkBoost += virtueItem.atkBoost;
+                    if (virtueItem.defBoost) inventory.defBoost += virtueItem.defBoost;
+                    if (virtueItem.hpBoost) {
+                        inventory.hpBoost += virtueItem.hpBoost;
+                        heroes.forEach(h => h.maxHp += virtueItem.hpBoost);
+                    }
+                }
+                
+                if (viceName === "The Devil") {
                     showViceTeaching(battle.enemies[0].vice, () => {
                         showGameVictory();
                     });
                     return;
                 }
                 
-                if (DEADLY_SINS.includes(battle.enemies[0].vice.name)) {
-                    defeatedSins.add(battle.enemies[0].vice.name);
+                if (DEADLY_SINS.includes(viceName)) {
+                    defeatedSins.add(viceName);
                     
                     if (defeatedSins.size >= 7) {
-                        showViceTeaching(battle.enemies[0].vice, () => {
-                            hudMsg = 'All Seven Deadly Sins defeated! Final battle awaits...';
-                            hudMsgTimer = 4;
-                            dungeonLevel++;
-                            generateDungeon(true);
-                            gameState = 'explore';
+                        const virtueItem = VIRTUE_ITEMS[viceName];
+                        showVirtueItemReceived(virtueItem, () => {
+                            showViceTeaching(battle.enemies[0].vice, () => {
+                                hudMsg = 'All Sins defeated! The Devil awaits...';
+                                hudMsgTimer = 4;
+                                dungeonLevel++;
+                                generateDungeon(true);
+                                gameState = 'explore';
+                            });
                         });
                         return;
                     }
@@ -933,12 +1198,24 @@
                 
                 dungeonLevel++;
                 
-                showViceTeaching(battle.enemies[0].vice, () => {
-                    hudMsg = `Victory! Level ${dungeonLevel}`;
-                    hudMsgTimer = 3;
-                    generateDungeon();
-                    gameState = 'explore';
-                });
+                if (DEADLY_SINS.includes(viceName)) {
+                    const virtueItem = VIRTUE_ITEMS[viceName];
+                    showVirtueItemReceived(virtueItem, () => {
+                        showViceTeaching(battle.enemies[0].vice, () => {
+                            hudMsg = `Victory! Level ${dungeonLevel}`;
+                            hudMsgTimer = 3;
+                            generateDungeon();
+                            gameState = 'explore';
+                        });
+                    });
+                } else {
+                    showViceTeaching(battle.enemies[0].vice, () => {
+                        hudMsg = `Victory! Level ${dungeonLevel}`;
+                        hudMsgTimer = 3;
+                        generateDungeon();
+                        gameState = 'explore';
+                    });
+                }
             } else {
                 dungeonLevel = 1;
                 defeatedSins.clear();
@@ -950,9 +1227,42 @@
                 inventory.atkBoost = 0;
                 inventory.defBoost = 0;
                 inventory.hpBoost = 0;
+                inventory.virtueItems = [];
                 generateDungeon();
                 gameState = 'explore';
             }
+        }
+
+        function showVirtueItemReceived(item, callback) {
+            document.getElementById('quote-text').innerHTML = `
+                <div style="color: #2ecc71; font-size: 18px; font-weight: bold; margin-bottom: 12px;">
+                    ✨ VIRTUE ITEM RECEIVED! ✨
+                </div>
+                <div style="color: #f39c12; font-size: 16px; margin-bottom: 10px;">
+                    ${item.name}
+                </div>
+                <div style="color: #ecf0f1; font-size: 13px; margin-bottom: 12px;">
+                    ${item.effect}
+                </div>
+                <div style="color: #95a5a6; font-size: 11px; line-height: 1.4;">
+                    This sacred item strengthens your heroes for battles ahead!
+                </div>
+            `;
+            
+            document.getElementById('quote-author').textContent = '';
+            document.getElementById('quote-overlay').style.display = 'flex';
+            
+            const continueBtn = document.getElementById('quote-continue');
+            continueBtn.textContent = 'Continue';
+            const handleContinue = () => {
+                document.getElementById('quote-overlay').style.display = 'none';
+                continueBtn.removeEventListener('click', handleContinue);
+                continueBtn.removeEventListener('touchend', handleContinue);
+                callback();
+            };
+            
+            continueBtn.addEventListener('click', handleContinue);
+            continueBtn.addEventListener('touchend', handleContinue);
         }
 
         function showGameVictory() {
@@ -991,6 +1301,7 @@
                 inventory.atkBoost = 0;
                 inventory.defBoost = 0;
                 inventory.hpBoost = 0;
+                inventory.virtueItems = [];
                 generateDungeon();
                 gameState = 'explore';
             };
@@ -1039,6 +1350,7 @@
             `;
             
             document.getElementById('quote-author').textContent = '';
+            document.getElementById('quote-continue').textContent = 'Continue';
             document.getElementById('quote-overlay').style.display = 'flex';
             
             const continueBtn = document.getElementById('quote-continue');
@@ -1053,7 +1365,6 @@
             continueBtn.addEventListener('touchend', handleContinue);
         }
 
-        // ===== INVENTORY SYSTEM =====
         let invSelection = 0;
 
         function openInventory() {
@@ -1061,10 +1372,9 @@
             invSelection = 0;
         }
 
-        // ===== INPUT =====
         const keys = {};
         const keyPressed = {};
-        
+
         window.addEventListener('keydown', (e) => {
             const k = e.key.toLowerCase();
             if (!keys[k]) {
@@ -1072,16 +1382,15 @@
             }
             keys[k] = true;
             
-            // Map A and B keys
-            if (k === 'a') {
+            if (k === 'z' && !keyPressed['enter']) {
                 keyPressed['enter'] = true;
             }
-            if (k === 'b') {
+            if (k === 'x' && !keyPressed['escape']) {
                 keyPressed['escape'] = true;
             }
             
             if (gameState === 'title') {
-                if (e.key === 'Enter' || k === 'a') {
+                if (e.key === 'Enter' || k === 'z') {
                     gameState = 'explore';
                     generateDungeon();
                 } else if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
@@ -1090,13 +1399,14 @@
                         (currentVerseIndex + titleScreenVerses.length - 1) % titleScreenVerses.length;
                     verseTimer = VERSE_DISPLAY_TIME;
                 }
-            } else if (gameState === 'battle') {
+            } else if (gameState === 'battle' && !battle.isProcessing) {
                 if (battle.phase === 'menu') {
                     if (e.key === 'ArrowDown' || k === 's') {
-                        battle.menuSelection = Math.min(BATTLE_ACTIONS.length - 1, battle.menuSelection + 1);
+                        battle.menuSelection = (battle.menuSelection + 1) % BATTLE_ACTIONS.length;
                     } else if (e.key === 'ArrowUp' || k === 'w') {
-                        battle.menuSelection = Math.max(0, battle.menuSelection - 1);
-                    } else if (e.key === 'Enter' || k === 'a') {
+                        battle.menuSelection = (battle.menuSelection - 1 + BATTLE_ACTIONS.length) % BATTLE_ACTIONS.length;
+                    } else if ((e.key === 'Enter' || k === 'z') && keyPressed['enter']) {
+                        keyPressed['enter'] = false;
                         if (BATTLE_ACTIONS[battle.menuSelection] === 'Item') {
                             battle.phase = 'item';
                             battle.itemSelection = 0;
@@ -1124,34 +1434,36 @@
                         if (prev >= 0) {
                             battle.targetSelection = prev;
                         }
-                    } else if (e.key === 'Enter' || k === 'a') {
+                    } else if ((e.key === 'Enter' || k === 'z') && keyPressed['enter']) {
+                        keyPressed['enter'] = false;
                         battle.phase = 'executing';
                         executeBattleAction();
-                    } else if (e.key === 'Escape' || k === 'b') {
+                    } else if (e.key === 'Escape' || k === 'x') {
                         battle.phase = 'menu';
                     }
                 } else if (battle.phase === 'item') {
                     if (e.key === 'ArrowDown' || k === 's') {
-                        battle.itemSelection = Math.min(ITEM_ACTIONS.length - 1, battle.itemSelection + 1);
+                        battle.itemSelection = (battle.itemSelection + 1) % ITEM_ACTIONS.length;
                     } else if (e.key === 'ArrowUp' || k === 'w') {
-                        battle.itemSelection = Math.max(0, battle.itemSelection - 1);
-                    } else if (e.key === 'Enter' || k === 'a') {
+                        battle.itemSelection = (battle.itemSelection - 1 + ITEM_ACTIONS.length) % ITEM_ACTIONS.length;
+                    } else if ((e.key === 'Enter' || k === 'z') && keyPressed['enter']) {
+                        keyPressed['enter'] = false;
                         if (ITEM_ACTIONS[battle.itemSelection] === 'Back') {
                             battle.phase = 'menu';
                         } else {
                             battle.phase = 'executing';
                             useItem();
                         }
-                    } else if (e.key === 'Escape' || k === 'b') {
+                    } else if (e.key === 'Escape' || k === 'x') {
                         battle.phase = 'menu';
                     }
                 }
             } else if (gameState === 'inventory') {
                 if (e.key === 'ArrowDown' || k === 's') {
-                    invSelection = Math.min(2, invSelection + 1);
+                    invSelection = Math.min(2 + inventory.virtueItems.length, invSelection + 1);
                 } else if (e.key === 'ArrowUp' || k === 'w') {
                     invSelection = Math.max(0, invSelection - 1);
-                } else if (e.key === 'Escape' || k === 'b' || k === 'i') {
+                } else if (e.key === 'Escape' || k === 'x' || k === 'i') {
                     gameState = 'explore';
                 }
             } else if (gameState === 'explore') {
@@ -1164,11 +1476,18 @@
         
         window.addEventListener('keyup', (e) => {
             keys[e.key.toLowerCase()] = false;
-            keyPressed[e.key.toLowerCase()] = false;
+            if (e.key.toLowerCase() === 'z') keyPressed['enter'] = false;
+            if (e.key.toLowerCase() === 'x') keyPressed['escape'] = false;
         });
 
-        // ===== TOUCH CONTROLS =====
         function setupTouchControls() {
+            const keyMap = {
+                'arrowup': 'ArrowUp',
+                'arrowdown': 'ArrowDown',
+                'arrowleft': 'ArrowLeft',
+                'arrowright': 'ArrowRight'
+            };
+
             document.querySelectorAll('.dpad-btn:not(.center)').forEach(btn => {
                 const key = btn.dataset.key;
                 
@@ -1176,12 +1495,18 @@
                     e.preventDefault();
                     keys[key] = true;
                     keyPressed[key] = true;
+                    const dispatchKey = keyMap[key] || key;
+                    const event = new KeyboardEvent('keydown', { key: dispatchKey });
+                    window.dispatchEvent(event);
                 });
                 
                 btn.addEventListener('touchend', (e) => {
                     e.preventDefault();
                     keys[key] = false;
                     keyPressed[key] = false;
+                    const dispatchKey = keyMap[key] || key;
+                    const event = new KeyboardEvent('keyup', { key: dispatchKey });
+                    window.dispatchEvent(event);
                 });
             });
             
@@ -1208,12 +1533,12 @@
                 
                 btn.addEventListener('touchend', (e) => {
                     e.preventDefault();
-                    keyPressed[key] = false;
+                    if (key === 'a') keyPressed['enter'] = false;
+                    if (key === 'b') keyPressed['escape'] = false;
                 });
             });
         }
 
-        // ===== COLLISION =====
         function collides(x, y) {
             const tx = Math.floor(x / TILE_SIZE);
             const ty = Math.floor(y / TILE_SIZE);
@@ -1221,7 +1546,24 @@
             return map[ty][tx] >= 10;
         }
 
-        // ===== UPDATE =====
+        function getEnemySprite(viceName, isMinion) {
+            if (viceName === "The Devil") {
+                return isMinion ? sprites.demon : sprites.devil;
+            }
+            
+            const spriteMap = {
+                "Pride": sprites.pride,
+                "Greed": sprites.greed,
+                "Lust": sprites.lust,
+                "Envy": sprites.envy,
+                "Gluttony": sprites.gluttony,
+                "Wrath": sprites.wrath,
+                "Sloth": sprites.sloth
+            };
+            
+            return isMinion ? sprites.enemy : (spriteMap[viceName] || sprites.enemy);
+        }
+
         function update(dt) {
             battle.shake *= 0.85;
             battle.flash = Math.max(0, battle.flash - dt * 80);
@@ -1286,10 +1628,19 @@
                 }
 
                 for (let e of enemies) {
-                    e.x += e.vx * dt;
-                    e.y += e.vy * dt;
-                    
-                    if (collides(e.x, e.y) || Math.random() < dt * 2) {
+                    const nextEX = e.x + e.vx * dt;
+                    const nextEY = e.y + e.vy * dt;
+
+                    if (!collides(nextEX, nextEY)) {
+                        e.x = nextEX;
+                        e.y = nextEY;
+                    } else {
+                        const angle = Math.random() * Math.PI * 2;
+                        e.vx = Math.cos(angle) * e.speed;
+                        e.vy = Math.sin(angle) * e.speed;
+                    }
+
+                    if (Math.random() < dt * 2) {
                         const angle = Math.random() * Math.PI * 2;
                         e.vx = Math.cos(angle) * e.speed;
                         e.vy = Math.sin(angle) * e.speed;
@@ -1305,7 +1656,6 @@
             }
         }
 
-        // ===== RENDER =====
         function render() {
             ctx.save();
             ctx.scale(SCALE, SCALE);
@@ -1318,11 +1668,12 @@
                 ctx.fillStyle = '#f39c12';
                 ctx.font = 'bold 16px monospace';
                 ctx.textAlign = 'center';
-                ctx.fillText('WARRIORS OF FAITH', VIEW_WIDTH/2, 30);
+                ctx.fillText('THE SEVEN HEAVENLY', VIEW_WIDTH/2, 25);
+                ctx.fillText('VIRTUES', VIEW_WIDTH/2, 40);
                 
                 ctx.font = 'bold 11px monospace';
                 ctx.fillStyle = '#9b59b6';
-                ctx.fillText('Battle Against Sin & Death', VIEW_WIDTH/2, 48);
+                ctx.fillText('Battle Against Sin & Death', VIEW_WIDTH/2, 55);
                 
                 const verse = titleScreenVerses[currentVerseIndex];
                 ctx.font = '8px monospace';
@@ -1345,7 +1696,7 @@
                 
                 ctx.fillStyle = '#2ecc71';
                 ctx.font = 'bold 10px monospace';
-                ctx.fillText('Press ENTER or A to Begin', VIEW_WIDTH/2, VIEW_HEIGHT - 20);
+                ctx.fillText('Press ENTER or Z to Begin', VIEW_WIDTH/2, VIEW_HEIGHT - 20);
                 
                 ctx.textAlign = 'left';
                 
@@ -1371,7 +1722,8 @@
                 }
 
                 for (let e of enemies) {
-                    ctx.drawImage(sprites.enemy, e.x - camX, e.y - camY);
+                    const enemySprite = getEnemySprite(e.vice.name, false);
+                    ctx.drawImage(enemySprite, e.x - camX, e.y - camY);
                     if (e.vice) {
                         ctx.fillStyle = '#e74c3c';
                         ctx.font = 'bold 6px monospace';
@@ -1389,7 +1741,7 @@
                 ctx.textAlign = 'left';
                 ctx.fillText(`Level: ${dungeonLevel}`, 10, 15);
                 ctx.fillText(`Sins: ${defeatedSins.size}/7`, 10, 26);
-                ctx.fillText(`Gold: ${inventory.gold}`, 10, 37);
+                ctx.fillText(`Virtues: ${inventory.virtueItems.length}/7`, 10, 37);
                 ctx.fillStyle = '#3498db';
                 ctx.fillText(`Water: ${inventory.holyWater}`, 10, 48);
                 ctx.fillStyle = '#8b4513';
@@ -1405,8 +1757,9 @@
                 }
                 
             } else if (gameState === 'battle') {
-                ctx.fillStyle = '#1a1a2e';
-                ctx.fillRect(0, 0, VIEW_WIDTH, VIEW_HEIGHT);
+                const bgTypes = ['grass', 'desert', 'dungeon'];
+                const bgType = bgTypes[Math.min(Math.floor((dungeonLevel - 1) / 3), 2)];
+                ctx.drawImage(battleBackgrounds[bgType], 0, 0);
 
                 ctx.save();
                 if (battle.shake > 0) {
@@ -1423,7 +1776,6 @@
                     ctx.globalAlpha = 1;
                 }
 
-                // Heroes
                 const heroX = 30;
                 const heroStartY = 60;
                 const heroSpacing = 25;
@@ -1437,14 +1789,18 @@
                         ctx.fillRect(heroX - 5, y - 5, 100, 24);
                     }
                     
-                    ctx.drawImage(sprites.player, heroX, y);
+                    const heroSprites = {
+                        "St. Michael": sprites.stMichael,
+                        "St. Joan": sprites.stJoan,
+                        "St. Vincent": sprites.stVincent
+                    };
+                    ctx.drawImage(heroSprites[hero.name] || sprites.player, heroX, y);
                     
                     ctx.fillStyle = hero.color;
                     ctx.font = 'bold 8px monospace';
                     ctx.textAlign = 'left';
                     ctx.fillText(hero.name, heroX + 20, y + 2);
                     
-                    // HP Bar
                     ctx.fillStyle = '#34495e';
                     ctx.fillRect(heroX + 20, y + 10, 70, 5);
                     const hpPercent = hero.hp / (hero.maxHp + inventory.hpBoost);
@@ -1456,7 +1812,6 @@
                     ctx.fillText(`${Math.max(0, hero.hp)}/${hero.maxHp + inventory.hpBoost}`, heroX + 95, y + 14);
                 }
 
-                // Enemies
                 const enemyX = VIEW_WIDTH - 80;
                 const enemyStartY = 70;
                 const enemySpacing = 30;
@@ -1471,14 +1826,14 @@
                             ctx.fillRect(enemyX - 5, y - 5, 75, 24);
                         }
                         
-                        ctx.drawImage(sprites.enemy, enemyX, y);
+                        const enemySprite = getEnemySprite(enemy.vice.name, enemy.isMinion);
+                        ctx.drawImage(enemySprite, enemyX, y);
                         
                         ctx.fillStyle = '#e74c3c';
                         ctx.font = 'bold 8px monospace';
                         ctx.textAlign = 'right';
                         ctx.fillText(enemy.name, enemyX - 5, y + 5);
                         
-                        // HP Bar
                         ctx.fillStyle = '#34495e';
                         ctx.fillRect(enemyX - 60, y + 10, 55, 5);
                         ctx.fillStyle = '#e74c3c';
@@ -1491,7 +1846,6 @@
                     }
                 }
 
-                // Battle menu
                 ctx.fillStyle = 'rgba(22, 33, 62, 0.95)';
                 ctx.fillRect(0, VIEW_HEIGHT - 50, VIEW_WIDTH, 50);
                 
@@ -1515,7 +1869,7 @@
                     ctx.fillStyle = '#95a5a6';
                     ctx.font = '7px monospace';
                     ctx.textAlign = 'left';
-                    ctx.fillText('↑↓ Select | A Confirm', 20, VIEW_HEIGHT - 10);
+                    ctx.fillText('↑↓ Select | Z Confirm', 20, VIEW_HEIGHT - 10);
                     
                 } else if (battle.phase === 'target') {
                     ctx.fillStyle = '#fff';
@@ -1525,7 +1879,7 @@
                     
                     ctx.fillStyle = '#95a5a6';
                     ctx.font = '7px monospace';
-                    ctx.fillText('↑↓ Select | A Confirm | B Back', VIEW_WIDTH/2, VIEW_HEIGHT - 10);
+                    ctx.fillText('↑↓ Select | Z Confirm | X Back', VIEW_WIDTH/2, VIEW_HEIGHT - 10);
                     
                 } else if (battle.phase === 'item') {
                     const btnWidth = 60;
@@ -1550,10 +1904,9 @@
                     ctx.fillStyle = '#95a5a6';
                     ctx.font = '7px monospace';
                     ctx.textAlign = 'left';
-                    ctx.fillText('↑↓ Select | A Confirm | B Back', 20, VIEW_HEIGHT - 10);
+                    ctx.fillText('↑↓ Select | Z Confirm | X Back', 20, VIEW_HEIGHT - 10);
                 }
                 
-                // Battle log
                 ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
                 ctx.fillRect(10, 15, VIEW_WIDTH - 20, 40);
                 ctx.fillStyle = '#ecf0f1';
@@ -1561,6 +1914,20 @@
                 ctx.textAlign = 'left';
                 for (let i = 0; i < Math.min(4, battle.log.length); i++) {
                     ctx.fillText(battle.log[i], 15, 25 + i * 10);
+                }
+
+                if (dungeonLevel === 1 && battle.phase === 'menu') {
+                    ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
+                    ctx.fillRect(VIEW_WIDTH/2 - 80, 5, 160, 35);
+                    ctx.fillStyle = '#f39c12';
+                    ctx.font = '7px monospace';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('BATTLE TUTORIAL', VIEW_WIDTH/2, 13);
+                    ctx.fillStyle = '#fff';
+                    ctx.font = '6px monospace';
+                    ctx.fillText('↑↓: Select action', VIEW_WIDTH/2, 22);
+                    ctx.fillText('Z/Enter: Confirm', VIEW_WIDTH/2, 30);
+                    ctx.fillText('X/Esc: Back', VIEW_WIDTH/2, 38);
                 }
 
                 ctx.restore();
@@ -1584,35 +1951,50 @@
                 ];
                 
                 for (let i = 0; i < items.length; i++) {
-                    const y = 50 + i * 35;
+                    const y = 40 + i * 30;
                     
                     ctx.fillStyle = i === invSelection ? 'rgba(243, 156, 18, 0.3)' : 'rgba(0, 0, 0, 0.5)';
-                    ctx.fillRect(15, y, VIEW_WIDTH - 30, 30);
+                    ctx.fillRect(15, y, VIEW_WIDTH - 30, 26);
                     
                     ctx.fillStyle = '#fff';
                     ctx.fillText(`${items[i].name}: ${items[i].value}`, 25, y + 12);
                     ctx.fillStyle = '#95a5a6';
                     ctx.font = '8px monospace';
-                    ctx.fillText(items[i].desc, 25, y + 24);
+                    ctx.fillText(items[i].desc, 25, y + 22);
                     ctx.font = '10px monospace';
                 }
                 
-                ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
-                ctx.fillRect(15, 165, VIEW_WIDTH - 30, 25);
-                ctx.fillStyle = '#2ecc71';
-                ctx.fillText(`ATK Boost: +${inventory.atkBoost}`, 25, 178);
-                ctx.fillText(`HP Boost: +${inventory.hpBoost}`, 110, 178);
+                if (inventory.virtueItems.length > 0) {
+                    ctx.fillStyle = '#2ecc71';
+                    ctx.font = 'bold 11px monospace';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('VIRTUE ITEMS:', VIEW_WIDTH/2, 140);
+                    
+                    ctx.font = '8px monospace';
+                    ctx.textAlign = 'left';
+                    let vY = 150;
+                    for (let sinName of inventory.virtueItems) {
+                        const item = VIRTUE_ITEMS[sinName];
+                        const selected = invSelection === (3 + inventory.virtueItems.indexOf(sinName));
+                        
+                        ctx.fillStyle = selected ? 'rgba(46, 204, 113, 0.3)' : 'rgba(0, 0, 0, 0.3)';
+                        ctx.fillRect(15, vY, VIEW_WIDTH - 30, 18);
+                        
+                        ctx.fillStyle = '#f39c12';
+                        ctx.fillText(`${item.name} - ${item.effect}`, 25, vY + 12);
+                        vY += 20;
+                    }
+                }
                 
                 ctx.fillStyle = '#95a5a6';
                 ctx.font = '8px monospace';
                 ctx.textAlign = 'center';
-                ctx.fillText('Press B or I to close', VIEW_WIDTH/2, VIEW_HEIGHT - 10);
+                ctx.fillText('Press X or I to close', VIEW_WIDTH/2, VIEW_HEIGHT - 10);
             }
 
             ctx.restore();
         }
 
-        // ===== GAME LOOP =====
         let lastTime = performance.now();
         function gameLoop(currentTime) {
             const dt = Math.min(0.033, (currentTime - lastTime) / 1000);
@@ -1624,9 +2006,8 @@
             requestAnimationFrame(gameLoop);
         }
 
-        // ===== INITIALIZATION =====
         function init() {
-            console.log('Warriors of Faith initialized!');
+            console.log('The Seven Heavenly Virtues initialized!');
             setupTouchControls();
             verseTimer = VERSE_DISPLAY_TIME;
             requestAnimationFrame(gameLoop);
